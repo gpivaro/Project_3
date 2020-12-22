@@ -1,0 +1,1 @@
+Select * from realstatelisting Order by house_id;
