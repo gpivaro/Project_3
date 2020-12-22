@@ -39,17 +39,23 @@ def scraped_data(page_number):
     # Search for the div where the title is located
     results = soup.find_all('div', class_="card-box")
     # print(results[1].prettify())
-    print(f"Total results: {len(results)}")
-    print('-----------------------------------')
+    # print(f"Total results: {len(results)}")
+    # print('-----------------------------------')
 
     # Print results and save to a dictionary
     n = 0
     realstate_list = []
     for result in results:
+    #     Clear the variables to not store repeated info
+        house_price = ''
+        address = ''
+        link_page = ''
+        photo_url = ''
+                    
         n = n + 1
         # print('-----------------------------------')
         # print('')
-        print(f'Result: {n} of {len(results)}')
+        # print(f'Result: {n} of {len(results)}')
         if not result.find('div', class_="ads"):
     #         print(f'Result: {n} of {len(results)}')
             price_div = result.find('div', class_="price")
@@ -66,34 +72,29 @@ def scraped_data(page_number):
                 pass
             # print(f"Link: {link_details}{link_page}")
             try:
-                photo_url = img_label['srcset'].split(',')[1]
+                photo_url = img_label['srcset'].split(',')[1].split(' ')[1]
                 # print(f"Photo link: {photo_url}")
             except:
                 # print(f"Photo not available")
                 pass
+        
+            # Save results to a dictionary
+            realstate_list.append(
+                {
+                    "Price": int(house_price.replace(',','')),
+                    "Address": address,
+                    "Link": str(link_details+link_page),
+                    "Photo link": photo_url
+                }
+            )
+    
         else:
             print('Data not available')
 
-        # print('')
-        
-    #     Save results to a dictionary
-        realstate_list.append(
-            {
-                "Price": int(house_price.replace(',','')),
-                "Address": address,
-                "Link": str(link_details+link_page),
-                "Photo link": photo_url
-            }
-        )
+    # print('')
     
     # When you’ve finished testing, close your browser using browser.quit:
     browser.quit()
 
-    
-    
+        
     return realstate_list
-
-
-
-# listings = scraped_data()
-# print(listings)

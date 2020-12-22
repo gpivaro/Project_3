@@ -11,6 +11,8 @@ CREATE TABLE realstatelisting(
 	price FLOAT NOT NULL,
 	address VARCHAR(300) NOT NULL UNIQUE,
 	house_link VARCHAR(300) NOT NULL,
-	photolink VARCHAR(300) NOT NULL,	
+	photolink VARCHAR(300) NOT NULL,
+	latitude FLOAT,
+	longitude FLOAT,
 	PRIMARY KEY(house_id)
 );

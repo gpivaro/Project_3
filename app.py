@@ -1,4 +1,5 @@
 from scrapy_realstate import scraped_data
+from address_cordinates import get_coordinates
 import os
 import pandas as pd
 from flask import (
@@ -48,6 +49,8 @@ class RealState(db.Model):
     address = db.Column(db.String(300))
     house_link = db.Column(db.String(300))
     photolink = db.Column(db.String(300))
+    latitude = db.Column(db.Float)
+    longitude = db.Column(db.Float)
 
     def __repr__(self):
         return '<Listing %r>' % (self.address)
@@ -68,28 +71,47 @@ def scrapy(page_number):
 
     # run function to scrapy data
     listings = scraped_data(page_number)
+
+#     listings = [{'Price': 300000,
+#   'Address': '13414 Boca Raton Dr, Houston, TX 77069',
+#   'Link': 'https://www.realtor.com/realestateandhomes-detail/13414-Boca-Raton-Dr_Houston_TX_77069_M85440-60130',
+#   'Photo link': ''},{'Price': 299999,
+#   'Address': '4711 Hershe St, Houston, TX 77020',
+#   'Link': 'https://www.realtor.com/realestateandhomes-detail/4711-Hershe-St_Houston_TX_77020_M92791-49875',
+#   'Photo link': ''}]
     
     n = 0
     for item in listings:
 
-        # Clear strings to avoid keep previous info
-        price = ''
-        address =  ''
-        house_link = ''
-        photolink = ''
-        
         price = int(item["Price"])
         address = item["Address"]
         house_link = item["Link"]
         photolink = item["Photo link"]
         
-        # Create an instance with the data
-        house = RealState(
-            price = price,
-            address = address,
-            house_link = house_link,
-            photolink = photolink,
-            )
+        # get coordinates
+        coordinates = get_coordinates(address)
+        if coordinates:
+            latitude = coordinates['latitude']
+            longitude = coordinates['longitude']
+
+        # Create an instance with the data if the coordinates are not empty
+            house = RealState(
+                price = price,
+                address = address,
+                house_link = house_link,
+                photolink = photolink,
+                latitude = latitude,
+                longitude = longitude
+                )
+        else:
+            house = RealState(
+                price = price,
+                address = address,
+                house_link = house_link,
+                photolink = photolink
+                )
+
+        
 
         # Add recordes to database
         try:
@@ -116,7 +138,9 @@ def realstatelistings():
         RealState.price, 
         RealState.address, 
         RealState.house_link,
-        RealState.photolink
+        RealState.photolink,
+        RealState.latitude,
+        RealState.longitude
         ).all()
 
     # Convert the data to a dataframe
