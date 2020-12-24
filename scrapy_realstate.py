@@ -28,7 +28,7 @@ def scraped_data(page_number):
     browser.visit(query_url)
 
     # Wait for 5 seconds for error purpouses
-    time.sleep(10)
+    time.sleep(20)
 
     # Return the rendered page by the browser
     html_realtor = browser.html
@@ -89,12 +89,13 @@ def scraped_data(page_number):
             )
     
         else:
-            print('Data not available')
+            print('Data not available or Advertise.')
 
     # print('')
     
     # When you’ve finished testing, close your browser using browser.quit:
     browser.quit()
 
+    print(f"Items on the web page: {len(realstate_list)}.")
         
     return realstate_list
