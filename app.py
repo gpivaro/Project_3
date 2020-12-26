@@ -1,5 +1,5 @@
 from scrapy_realstate import scraped_data
-from database_scripts import addtodatabase, addonetodatabase
+from database_scripts import addonetodatabase
 
 import os
 import pandas as pd
@@ -65,6 +65,12 @@ class RealState(db.Model):
 
 @app.route("/")
 def home():
+
+    return render_template("index.html")
+
+
+@app.route("/routes")
+def routes_available():
 
     return (
         f"<h3>Welcome</h3><br>"

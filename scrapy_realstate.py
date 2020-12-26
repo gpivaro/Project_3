@@ -56,14 +56,19 @@ def scraped_data(page_number):
             link_page = result.find('a')['href']
             img_label = result.find('img')
             address = img_label['alt']
-# 
+
+            try:
+                photo_url = img_label['srcset'].split(',')[1].split(' ')[1]
+            except KeyError:
+                pass
             
             # Save results to a dictionary
             realstate_list.append(
                 {
                     "Price": int(house_price.replace(',','')),
                     "Address": address,
-                    "Link": str(link_details+link_page)
+                    "Link": str(link_details+link_page),
+                    "Photo link": photo_url
                 }
             )
     
