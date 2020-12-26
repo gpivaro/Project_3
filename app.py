@@ -56,6 +56,19 @@ class RealState(db.Model):
     def __repr__(self):
         return '<Listing %r>' % (self.address)
 
+# Create class to frame each real state instance
+class UserSelection(db.Model):
+    __tablename__ = 'userselection'
+
+    userselection_id = db.Column(db.Integer, primary_key=True)
+    username = db.Column(db.String(300))
+    house_id = db.Column(db.Integer)
+    user_choice = db.Column(db.String(300))
+    
+
+    def __repr__(self):
+        return '<Listing %r>' % (self.house_id)
+
 # @app.before_first_request
 # def setup():
 #     # Recreate database each time for demo
@@ -63,9 +76,24 @@ class RealState(db.Model):
 #     db.create_all()
 
 
-@app.route("/")
-def home():
+@app.route("/", methods=['GET', 'POST'])
+def index():
+    """ https://www.youtube.com/watch?v=_sgVt16Q4O4 """
+    if request.method == 'POST':
+        print(f"User: {request.form['username']}")
+        print(f"House ID: {request.form['houseID']}")        
+        print(f"User selection: {request.form.getlist('myCheckbox')}")
+        userchoice = UserSelection(
+            username = request.form['username'],
+            house_id = request.form['houseID'], 
+            user_choice = request.form['myCheckbox']
+            )
+        
+        db.session.add(userchoice)
+        db.session.commit()
 
+        return redirect("/", code=302)
+    
     return render_template("index.html")
 
 
@@ -97,21 +125,36 @@ def scrapy(page_number):
     return f"New recordes added to database: {n}"
 
 
+# API to access all houses on the database
+@app.route("/api/realstatelistings/<queryfilter>")
+def realstatelistings(queryfilter):
 
-@app.route("/api/realstatelistings")
-def realstatelistings():
-
-    # Retrieve data from database
-    listings = db.session.query(
-        RealState.house_id, 
-        RealState.price, 
-        RealState.address, 
-        RealState.house_link,
-        RealState.photolink,
-        RealState.latitude,
-        RealState.longitude,
-        RealState.map_link
-        ).all()
+    if queryfilter == 'photo':
+        # Retrieve data from database excluding the entries with no photo and no coordinates
+        listings = db.session.query(
+            RealState.house_id, 
+            RealState.price, 
+            RealState.address, 
+            RealState.house_link,
+            RealState.photolink,
+            RealState.latitude,
+            RealState.longitude,
+            RealState.map_link
+            ).filter(RealState.latitude.isnot(None)).filter(RealState.photolink != "")
+            
+    else:
+        # Retrieve data from database excluding the entries with no photo and no coordinates
+        listings = db.session.query(
+            RealState.house_id, 
+            RealState.price, 
+            RealState.address, 
+            RealState.house_link,
+            RealState.photolink,
+            RealState.latitude,
+            RealState.longitude,
+            RealState.map_link
+            ).filter(RealState.latitude.isnot(None))
+            
 
     # Convert the data to a dataframe
     listing_df = pd.DataFrame(listings)
@@ -122,7 +165,30 @@ def realstatelistings():
     # Return json version of the data
     return jsonify(listing_dict)
 
+
+# API to access the user selections
+@app.route("/api/userselections/<UserName>")
+def userselections(UserName):
+
+    # Retrieve data from database
+    userchoices = db.session.query(
+        UserSelection.userselection_id,
+        UserSelection.username,
+        UserSelection.house_id,
+        UserSelection.user_choice
+        ).filter_by(username = UserName)
+
+    # Convert the data to a dataframe
+    userchoices_df = pd.DataFrame(userchoices)
+    
+    # Convert dataframe to dictionary
+    userchoices_dict = userchoices_df.to_dict(orient="records")
+
+    # Return json version of the data
+    return jsonify(userchoices_dict)
+
 if __name__ == "__main__":
-    app.run(debug=True)
+    # app.run(debug=True)
+    app.run(host="0.0.0.0", port=5100, debug=True)
 
 

@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="shortcut icon" href="../static/images/favicon.ico" type="image/x-icon">
+    <link rel="shortcut icon" href="{{ url_for('static', filename='images/favicon.ico')}}" type="image/x-icon">
     <title>Find Your Dream House</title>
 
     <!-- jQuery and JS bundle w/ Popper.js -->
@@ -33,7 +33,7 @@
     <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
 
     <!-- Our CSS -->
-    <link rel="stylesheet" type="text/css" href="/static/css/style.css">
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/style.css')}}">
 
     <!-- Leaflet.Terminator https://github.com/joergdietrich/Leaflet.Terminator -->
     <!-- <script src="https://unpkg.com/leaflet"></script> -->
@@ -106,13 +106,50 @@
             </div>
         </div>
         <a id="myAnchor" href="#"></a>
-        <!-- <button onclick="myFunction()">Change link</button> -->
     </div>
     <!-- <div id="map"></div> -->
 
-    <script src="../static/js/app.js">
 
-    </script>
+
+
+    <!-- Form to get the user selection -->
+    <div id="myForm" class="container">
+        <div class="row justify-content-md-center">
+            <div class="col-md-auto">
+                <h6 style="text-align: center;">Select one option for this listing:</h6>
+                <!-- <div class="btn-group" role="group" aria-label="Basic mixed styles example"> -->
+                <form method="POST" action="/" id="form" role="form">
+                    <div class="center">
+                        <!-- <label for="inputLat">Enter your name: </label> -->
+                        <input type="text" name="username" placeholder="Enter your name here">
+                    </div>
+                    <div class="center">
+                        <label class="btn btn btn-danger">
+                            <input type="checkbox" name="myCheckbox" value="Dislike">Dislike<br>
+                        </label>
+                        <label class="btn btn-warning">
+                            <input type="checkbox" name="myCheckbox" value="Missing Info">Missing Info<br>
+                        </label>
+                        <label class="btn btn-success">
+                            <input type="checkbox" name="myCheckbox" value="Like">Like<br>
+                        </label>
+                    </div>
+                    <div class="center">
+                        <input type="submit" value="submit" class="btn btn-default">
+                    </div>
+                    <input type="text" type="hidden" id="houseID" name="houseID">
+                </form>
+                <!-- </div> -->
+            </div>
+        </div>
+    </div>
+
+
+    <!-- JS to load house info on the page -->
+    <script src="{{ url_for('static', filename='js/app.js')}}"></script>
+
+
+
 
 </body>
 

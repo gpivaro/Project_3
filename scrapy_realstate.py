@@ -47,6 +47,7 @@ def scraped_data(page_number):
         house_price = ''
         address = ''
         link_page = ''
+        photo_url = ''
                     
         n = n + 1
         if not result.find('div', class_="ads"):
