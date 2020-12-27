@@ -1,5 +1,10 @@
 import requests
-from api_keys import positionstack_key
+import os
+
+try:
+    from api_keys import positionstack_key
+except ModuleNotFoundError:
+    positionstack_key = os.environ['positionstack_key']
 
 def nominatim_coordinates(address):    
     # https://nominatim.org/
