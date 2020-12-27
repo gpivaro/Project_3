@@ -39,6 +39,21 @@
     <!-- <script src="https://unpkg.com/leaflet"></script> -->
     <script src="https://unpkg.com/@joergdietrich/leaflet.terminator"></script>
 
+    <!--   Leaflet.fullscreen is available through the Mapbox Plugin CDN - just copy this include: -->
+    <script src='https://api.mapbox.com/mapbox.js/plugins/leaflet-fullscreen/v1.0.1/Leaflet.fullscreen.min.js'></script>
+    <link href='https://api.mapbox.com/mapbox.js/plugins/leaflet-fullscreen/v1.0.1/leaflet.fullscreen.css'
+        rel='stylesheet' />
+
+    <!-- Background image -->
+    <style>
+        body {
+            background-image: linear-gradient(to bottom, rgba(255, 255, 255, 0.6) 0%, rgba(255, 255, 255, 0.9) 100%), url('/static/images/real-estate-key-md.jpg');
+            background-repeat: no-repeat;
+            background-attachment: fixed;
+            background-size: 100% 100%;
+
+        }
+    </style>
 
 </head>
 
@@ -57,27 +72,25 @@
     </nav>
     <!-- Nav bar -->
 
-    <div class="jumbotron bg-cover"
-        style="text-align: center;background-image: linear-gradient(to bottom, rgba(255,255,255,0.6) 0%,rgba(255,255,255,0.9) 100%), url('/static/images/real-estate-key-md.jpg');">
-        <h1 class="display-4">Find Your Dream Home!</h1>
-        <br />
-        <br />
-        <p>Enter your name to begin classify houses.</p>
-        <!-- Form to get the user selection -->
-        <div id="myForm" class="container">
-            <div class="row justify-content-md-center">
-                <div class="col-md-auto">
-                    <form method="POST" action="/">
 
-                        <input type="text" id="fname" name="fname" placeholder="Your name" required><br><br>
-                        <input type="submit" value="Submit">
-                    </form>
-                </div>
+    <div class="container">
+        <div class="row">
+            <div class="col-4" style="margin-top: 2%;">
+                <h5 style="margin-top: 45%;">
+                    Real state on database: <span id="RealStateTotal" style="color:black"></span>
+                    <br><br>
+                    Average Price:
+                    <span id="AveragePrice" style="color:black"></span>
+                </h5>
+            </div>
+            <div class="col-8" style="margin-top: 2%;">
+                <div id="map"></div>
             </div>
         </div>
     </div>
 
-
+    <!-- JS to load house info on the page -->
+    <script src="{{ url_for('static', filename='js/realstate.js')}}"></script>
 
     <div>
         <footer class="footer">
@@ -86,11 +99,6 @@
                 2020</spam>
         </footer>
     </div>
-
-
-
-
-
 </body>
 
 </html>

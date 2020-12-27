@@ -1,3 +1,5 @@
+
+
 #map,
 body,
 html {
@@ -23,5 +25,43 @@ img {
   justify-content: center;
   align-items: center;
   height: 50px;
-  border: 1px solid green; 
+  /* border: 1px solid green;  */
+  margin: 1%;
+}
+
+#myForm{
+  margin-top: 2%;
+  margin-bottom: 15%;
+  padding-bottom: 10%;
+  /* border: 1px solid black; */
+  /* mar */
+}
+
+label{
+  margin: 0.5%;
+}
+
+/* Jumbotron background image */
+.bg-cover {
+  background-attachment: static;
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: cover;
+}
+
+/* Jumbotron whole page */
+.jumbotron{
+  height: 150%;
+}
+
+/* The code styles the text at the bottom of the footer */
+.footer > .bottom {
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  padding: 5px;
+  background:black;
+  color: white;
+  font-size: medium;
 }

@@ -75,9 +75,31 @@ class UserSelection(db.Model):
 #     db.drop_all()
 #     db.create_all()
 
-
+# Home page
 @app.route("/", methods=['GET', 'POST'])
 def index():
+    
+    if request.method == 'POST':
+            
+        user = request.form['fname']
+        
+        return redirect( f"/classify/{user}")
+
+    return render_template("index.html")
+
+@app.route("/routes")
+def routes_available():
+
+    return (
+        f"<h4>Routes:</h4>"
+        f"<p>/classify/user</p>"
+        f"<p>/api/realstatelistings/queryfilter</p>"
+        f"<p>/scrapy/page_number</p>"
+        f"<p>/api/userselections/UserName</p>"
+        )
+
+@app.route("/classify/<user>", methods=['GET', 'POST'])
+def classify(user):
     """ https://www.youtube.com/watch?v=_sgVt16Q4O4 """
     if request.method == 'POST':
         print(f"User: {request.form['username']}")
@@ -92,21 +114,12 @@ def index():
         db.session.add(userchoice)
         db.session.commit()
 
-        return redirect("/", code=302)
+        return redirect( f"/classify/{user}")
     
-    return render_template("index.html")
+    return render_template("classify.html", myVar=user)
 
 
-@app.route("/routes")
-def routes_available():
-
-    return (
-        f"<h3>Welcome</h3><br>"
-        f"<h4>Routes:</h4>"
-        f"<p>/scrapy/page_number</p>"
-        f"<p>/api/realstatelistings</p>"
-        )
-
+# Scrapy the data
 @app.route("/scrapy/<page_number>")
 def scrapy(page_number):
 
@@ -186,6 +199,13 @@ def userselections(UserName):
 
     # Return json version of the data
     return jsonify(userchoices_dict)
+
+
+@app.route("/realstate")
+def realstate():
+
+    return render_template("realstate.html")
+
 
 if __name__ == "__main__":
     # app.run(debug=True)

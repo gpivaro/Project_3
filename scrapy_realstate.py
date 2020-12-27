@@ -20,6 +20,7 @@ def scraped_data(page_number):
     min_price = '250000'
     max_price = '300000'
     sort_by = '/sby-2' # Highest to lowest price
+    sort_by = '/sby-6' # Newest listings
 
     query_url = f"{url_realtor}{min_price}-{max_price}{sort_by}/pg-{page_number}"
     # print(query_url)

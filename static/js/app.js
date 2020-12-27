@@ -1,4 +1,7 @@
-username = "Angela"
+var username = document.getElementById("UserName").value;
+console.log(username);
+
+
 d3.json(`/api/userselections/${username}`).then((userdata) => {
     console.log(userdata);
     var userPreviousSelectionArray = userdata.map(element => element.house_id);
@@ -8,7 +11,8 @@ d3.json(`/api/userselections/${username}`).then((userdata) => {
         console.log(data);
 
         var houseSelect = 0;
-        if (userPreviousSelectionArray.lenght < data.lenght) {
+        if (userPreviousSelectionArray.lenght != data.lenght) {
+
             console.log('No more houses to select')
             var myobj = document.getElementById("housePhotoPage");
             myobj.remove();
@@ -29,14 +33,22 @@ d3.json(`/api/userselections/${username}`).then((userdata) => {
 
             document.getElementById("housePhotoPage").src = `${data[houseSelect].photolink}`;
 
-            document.getElementById("myAnchor").innerHTML = `Address: ${data[houseSelect].address}`;
-            document.getElementById("myAnchor").href = `${data[houseSelect].house_link}`;
-            document.getElementById("myAnchor").target = "_blank";
+            // document.getElementById("myAnchor").innerHTML = `Address: ${data[houseSelect].address}`;
+            // document.getElementById("myAnchor").href = `${data[houseSelect].house_link}`;
+            // document.getElementById("myAnchor").target = "_blank";
+
+            document.getElementById('Price').textContent = `Price: $${(data[houseSelect].price).toLocaleString()}`;
+            document.getElementById('Address').textContent = `Address: ${data[houseSelect].address}`;
+
 
             // document.getElementById("houseWebPage").src = `${data[0].house_link}`;
 
             // Leaft let map
-            var map = L.map('map').setView([data[houseSelect].latitude, data[houseSelect].longitude], 14);
+            var map = L.map('map', {
+                scrollWheelZoom: false, //Disable scroll wheel zoom on Leaflet
+                fullscreenControl: true,
+            }
+            ).setView([data[houseSelect].latitude, data[houseSelect].longitude], 10);
 
             // To use OpenStreetMap instead of MapBox
             var attribution = "Map data &copy; <a href=\"https://www.openstreetmap.org/\">OpenStreetMap</a> contributors, <a href=\"https://creativecommons.org/licenses/by-sa/2.0/\">CC-BY-SA</a>, Imagery © <a href=\"https://www.mapbox.com/\">Mapbox</a>";
@@ -57,7 +69,6 @@ d3.json(`/api/userselections/${username}`).then((userdata) => {
 
     })
 })
-
 
 
 

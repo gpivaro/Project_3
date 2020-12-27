@@ -50,7 +50,7 @@ def positiontrack_coordinates(address):
     
     
     # Handle empty results
-    if len(response_coordinates['data'][0]) == 0:
+    if len(response_coordinates['data']) == 0 or len(response_coordinates['data'][0]) == 0:
         valid_result = False
         print("No result found")
         return {"Valid": valid_result}
