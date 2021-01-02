@@ -17,6 +17,7 @@ try:
     # Import DB user and password
     from api_keys import pgadim_user
     from api_keys import pgadim_pass
+    from api_keys import DATABASE_URL
 except:
     pass
 
@@ -34,7 +35,8 @@ try:
     db_uri = os.environ['DATABASE_URL']
 except KeyError:
     # db_uri = f"postgresql://{pgadim_user}:{pgadim_pass}@localhost:5432/project3_db"
-    db_uri = 'postgres://sscliosaywzfnc:d36e348541648ba73f1be2f4770479e68cbb22bcb679a1c31488ad4177773b6a@ec2-52-44-139-108.compute-1.amazonaws.com:5432/dc5parehr1qcuo'
+    db_uri = DATABASE_URL
+    
     print(db_uri)
 
 app.config['SQLALCHEMY_DATABASE_URI'] = db_uri
