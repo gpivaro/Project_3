@@ -2,7 +2,7 @@ import requests
 import os
 
 try:
-    from api_keys import positionstack_key
+    from api_keys import positionstack_key, opencagedata_API
 except ModuleNotFoundError:
     positionstack_key = os.environ['positionstack_key']
 
@@ -73,9 +73,59 @@ def positiontrack_coordinates(address):
 
         return {"Valid": valid_result,"latitude": latitude, "longitude": longitude, "map_url": map_url}
 
+
+
+
+def opencagedata_coordinates(address):
+    print('----------------------------------------')
+    # Forward Geocoding API Endpoint
+    url_opencagedata = 'https://api.opencagedata.com/geocode/v1/json?q='
+    api_KEY = f"&key={opencagedata_API}"
+
+    # Houston City Hall Coordinates
+    HoustonCityHallCoordinates = "29.760376354375307,-95.3702170895345"
+    proximity=f"{HoustonCityHallCoordinates}"
+    # Bounds for Houston (https://opencagedata.com/bounds-finder)
+    bounds='-95.91830,29.35389,-94.80848,30.26282'  
+    
+    # Format address to look up
+    print(f"Address: {address}")
+    address_lookup = address.replace(" ", "%20")
+    # Format URL to query
+    url_coordinates = f"{url_opencagedata}{address_lookup}{api_KEY}&bounds={bounds}&proximity={proximity}"
+
+    
+    #  Perform a request for data
+    response_coordinates = requests.get(url_coordinates).json()
+    
+    
+    # Handle empty results
+    if len(response_coordinates['results']) == 0:
+        valid_result = False
+        print("No result found")
+        return {"Valid": valid_result}
+        
+    else:
+        valid_result = True
+        print(response_coordinates)
+    
+        # return coordinates
+        latitude = response_coordinates['results'][0]['geometry']['lat']
+        longitude = response_coordinates['results'][0]['geometry']['lng']
+        
+        map_url = f"{response_coordinates['results'][0]['annotations']['OSM']['url']}"
+        print(f"Map: {map_url}")
+
+        return {"Valid": valid_result,"latitude": latitude, "longitude": longitude, "map_url": map_url}
+
+
 def address_coordinates(address):
     # Try retrieve coordinates with nominatin
-    result_nominatin = nominatim_coordinates(address)
+
+    # Attempt to use only opencagedata
+    result_nominatin = opencagedata_coordinates(address)
+
+    # result_nominatin = nominatim_coordinates(address)
     
     # if result not valid use position track
     if not result_nominatin["Valid"]:

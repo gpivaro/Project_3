@@ -33,7 +33,8 @@ app = Flask(__name__)
 try:
     db_uri = os.environ['DATABASE_URL']
 except KeyError:
-    db_uri = f"postgresql://{pgadim_user}:{pgadim_pass}@localhost:5432/project3_db"
+    # db_uri = f"postgresql://{pgadim_user}:{pgadim_pass}@localhost:5432/project3_db"
+    db_uri = 'postgres://sscliosaywzfnc:d36e348541648ba73f1be2f4770479e68cbb22bcb679a1c31488ad4177773b6a@ec2-52-44-139-108.compute-1.amazonaws.com:5432/dc5parehr1qcuo'
     print(db_uri)
 
 app.config['SQLALCHEMY_DATABASE_URI'] = db_uri
@@ -46,8 +47,8 @@ class RealState(db.Model):
     __tablename__ = 'realstatelisting'
 
     house_id = db.Column(db.Integer, primary_key=True)
-    price = db.Column(db.Float)
     address = db.Column(db.String(300), unique=True, nullable=False)
+    price = db.Column(db.Float)
     house_link = db.Column(db.String(300))
     photolink = db.Column(db.String(300))
     latitude = db.Column(db.Float)
@@ -63,7 +64,7 @@ class UserSelection(db.Model):
 
     userselection_id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(300))
-    house_id = db.Column(db.Integer)
+    house_id = db.Column(db.Integer, db.ForeignKey('realstatelisting.house_id'))
     user_choice = db.Column(db.String(300))
     
 
@@ -97,6 +98,7 @@ def routes_available():
         f"<p>/api/realstatelistings/queryfilter</p>"
         f"<p>/scrapy/page_number</p>"
         f"<p>/api/userselections/UserName</p>"
+        f"<html><a href='/'>Home</a></html>"
         )
 
 @app.route("/classify/<user>", methods=['GET', 'POST'])
@@ -136,7 +138,9 @@ def scrapy(page_number):
         if result == True:
             n = n + 1
 
-    return f"New recordes added to database: {n}"
+    return (f"New recordes added to database: {n}<br>"
+            f"<html><p><a href='/'>Home</a></p></html>"
+            )
 
 
 # API to access all houses on the database
@@ -201,7 +205,7 @@ def userselections(UserName):
     # Return json version of the data
     return jsonify(userchoices_dict)
 
-
+# Real state map
 @app.route("/realstate")
 def realstate():
 

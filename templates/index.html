@@ -5,7 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="shortcut icon" href="{{ url_for('static', filename='images/favicon.ico')}}" type="image/x-icon">
-    <title>Find Your Dream House</title>
+    <title>Find Your Dream Home</title>
 
     <!-- jQuery and JS bundle w/ Popper.js -->
     <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"
@@ -52,6 +52,19 @@
                 aria-label="Toggle navigation">
                 <span class="navbar-toggler-icon"></span>
             </button>
+            <div class="collapse navbar-collapse" id="navbarSupportedContent">
+                <ul class="navbar-nav ml-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="/realstate">Data</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/routes">API</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="https://github.com/gpivaro/Project_3">About</a>
+                    </li>
+                </ul>
+            </div>
         </div>
         </div>
     </nav>
@@ -62,14 +75,14 @@
         <h1 class="display-4">Find Your Dream Home!</h1>
         <br />
         <br />
-        <p>Enter your name to begin classify houses.</p>
+        <p>Enter your name and email to begin classify houses.</p>
         <!-- Form to get the user selection -->
         <div id="myForm" class="container">
             <div class="row justify-content-md-center">
                 <div class="col-md-auto">
                     <form method="POST" action="/">
-
                         <input type="text" id="fname" name="fname" placeholder="Your name" required><br><br>
+                        <input type="text" id="useremail" name="useremail" placeholder="Your email" required><br><br>
                         <input type="submit" value="Submit">
                     </form>
                 </div>

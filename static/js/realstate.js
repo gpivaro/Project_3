@@ -30,7 +30,7 @@ d3.json("/api/realstatelistings/all").then((data) => {
     // Leaft let map
     var map = L.map('map', {
         center: [29.75, -95.37],
-        zoom: 9.5,
+        zoom: 8.5,
         scrollWheelZoom: false, //Disable scroll wheel zoom on Leaflet
         fullscreenControl: true,
         layers: [OpenStreetTiles, realstateLayer]
