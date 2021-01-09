@@ -56,6 +56,10 @@ class RealState(db.Model):
     latitude = db.Column(db.Float)
     longitude = db.Column(db.Float)
     map_link = db.Column(db.String(300))
+    bed = db.Column(db.Integer)
+    bath = db.Column(db.Float)
+    sqft = db.Column(db.Integer)
+    sqftlot = db.Column(db.Integer)
 
     def __repr__(self):
         return '<Listing %r>' % (self.address)
@@ -71,7 +75,7 @@ class UserSelection(db.Model):
     
 
     def __repr__(self):
-        return '<Listing %r>' % (self.house_id)
+        return '<Listing %r>' % (self.userselection_id)
 
 # @app.before_first_request
 # def setup():
@@ -159,7 +163,11 @@ def realstatelistings(queryfilter):
             RealState.photolink,
             RealState.latitude,
             RealState.longitude,
-            RealState.map_link
+            RealState.map_link,
+            RealState.bed,
+            RealState.bath,
+            RealState.sqft,
+            RealState.sqftlot
             ).filter(RealState.latitude.isnot(None)).filter(RealState.photolink != "")
             
     else:
@@ -172,7 +180,11 @@ def realstatelistings(queryfilter):
             RealState.photolink,
             RealState.latitude,
             RealState.longitude,
-            RealState.map_link
+            RealState.map_link,
+            RealState.bed,
+            RealState.bath,
+            RealState.sqft,
+            RealState.sqftlot
             ).filter(RealState.latitude.isnot(None))
             
 

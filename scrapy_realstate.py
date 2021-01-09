@@ -17,7 +17,7 @@ def scraped_data(page_number):
     # URL of page to be scraped
     url_realtor = "https://www.realtor.com/realestateandhomes-search/Houston_TX/type-single-family-home/price-"
     link_details = "https://www.realtor.com"
-    min_price = '250000'
+    min_price = '200000'
     max_price = '300000'
     sort_by = '/sby-2' # Highest to lowest price
     sort_by = '/sby-6' # Newest listings
@@ -63,14 +63,25 @@ def scraped_data(page_number):
                 photo_url = img_label['srcset'].split(',')[1].split(' ')[1]
             except KeyError:
                 pass
-            
+
+            house_features = result.find('ul').text
+            list_house_features = house_features.replace("bed",";").replace("bath",";").replace("sqft lot",";").replace("sqft",";").split(";")
+            bed = list_house_features[0]
+            bath = list_house_features[1]
+            sqft = list_house_features[2]
+            sqftlot = list_house_features[3]
+                
             # Save results to a dictionary
             realstate_list.append(
                 {
                     "Price": int(house_price.replace(',','')),
                     "Address": address,
                     "Link": str(link_details+link_page),
-                    "Photo link": photo_url
+                    "Photo link": photo_url,
+                    "Beds": int(bed.replace(",","")),
+                    "Baths": float(bath),
+                    "Sqft": int(sqft.replace(",","")),
+                    "Sqft Lot": int(sqftlot.replace(",",""))
                 }
             )
     

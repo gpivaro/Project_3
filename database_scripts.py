@@ -66,6 +66,10 @@ def addonetodatabase(item, RealState, db):
     address = item["Address"]
     house_link = item["Link"]
     photolink = item["Photo link"]
+    bed = item["Beds"]
+    bath = item["Baths"]
+    sqft = item["Sqft"]
+    sqftlot = item["Sqft Lot"]
     
     coordinates = address_coordinates(address)
     if coordinates['Valid']:
@@ -82,7 +86,11 @@ def addonetodatabase(item, RealState, db):
             photolink = photolink,
             latitude = latitude,
             longitude = longitude,
-            map_link = map_link
+            map_link = map_link,
+            bed = bed,
+            bath = bath,
+            sqft = sqft,
+            sqftlot = sqftlot
             )
     else:
         # Create an instance with the data
@@ -90,7 +98,11 @@ def addonetodatabase(item, RealState, db):
             price = price,
             address = address,
             house_link = house_link,
-            photolink = photolink
+            photolink = photolink,
+            bed = bed,
+            bath = bath,
+            sqft = sqft,
+            sqftlot = sqftlot
             )
 
     # Add recordes to database
