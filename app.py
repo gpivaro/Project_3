@@ -50,16 +50,17 @@ class RealState(db.Model):
 
     house_id = db.Column(db.Integer, primary_key=True)
     address = db.Column(db.String(300), unique=True, nullable=False)
-    price = db.Column(db.Float)
-    house_link = db.Column(db.String(300))
-    photolink = db.Column(db.String(300))
-    latitude = db.Column(db.Float)
-    longitude = db.Column(db.Float)
-    map_link = db.Column(db.String(300))
-    bed = db.Column(db.Integer)
-    bath = db.Column(db.Float)
-    sqft = db.Column(db.Integer)
-    sqftlot = db.Column(db.Integer)
+    price = db.Column(db.Float, nullable=False)
+    bed = db.Column(db.Float, nullable=True)
+    bath = db.Column(db.Float, nullable=True)
+    sqft = db.Column(db.Float, nullable=True)
+    lot = db.Column(db.Float, nullable=True)
+    latitude = db.Column(db.Float, nullable=True)
+    longitude = db.Column(db.Float, nullable=True)
+    house_link = db.Column(db.String(300), nullable=True)
+    photolink = db.Column(db.String(300), nullable=True)
+    map_link = db.Column(db.String(300), nullable=True)
+    google_map = db.Column(db.String(300), nullable=True)
 
     def __repr__(self):
         return '<Listing %r>' % (self.address)
@@ -167,7 +168,7 @@ def realstatelistings(queryfilter):
             RealState.bed,
             RealState.bath,
             RealState.sqft,
-            RealState.sqftlot
+            RealState.lot
             ).filter(RealState.latitude.isnot(None)).filter(RealState.photolink != "")
             
     else:
@@ -184,8 +185,9 @@ def realstatelistings(queryfilter):
             RealState.bed,
             RealState.bath,
             RealState.sqft,
-            RealState.sqftlot
-            ).filter(RealState.latitude.isnot(None))
+            RealState.lot
+            )
+            # ).filter(RealState.latitude.isnot(None))
             
 
     # Convert the data to a dataframe
