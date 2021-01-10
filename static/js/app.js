@@ -31,7 +31,7 @@ d3.json(`/api/userselections/${username}`).then((userdata) => {
 
 
 
-            document.getElementById("housePhotoPage").src = `${data[houseSelect].photolink}`;
+            document.getElementById("housePhotoPage").src = `${data[houseSelect].image_1}`;
 
             // document.getElementById("myAnchor").innerHTML = `Address: ${data[houseSelect].address}`;
             // document.getElementById("myAnchor").href = `${data[houseSelect].house_link}`;
@@ -39,6 +39,10 @@ d3.json(`/api/userselections/${username}`).then((userdata) => {
 
             document.getElementById('Price').textContent = `Price: $${(data[houseSelect].price).toLocaleString()}`;
             document.getElementById('Address').textContent = `Address: ${data[houseSelect].address}`;
+            document.getElementById('Beds').textContent = `Beds: ${data[houseSelect].bed}`;
+            document.getElementById('Baths').textContent = `Baths: ${data[houseSelect].bath}`;
+            document.getElementById('Sqft').textContent = `sqft: ${data[houseSelect].sqft}`;
+
 
 
             // document.getElementById("houseWebPage").src = `${data[0].house_link}`;

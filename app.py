@@ -58,7 +58,8 @@ class RealState(db.Model):
     latitude = db.Column(db.Float, nullable=True)
     longitude = db.Column(db.Float, nullable=True)
     house_link = db.Column(db.String(300), nullable=True)
-    photolink = db.Column(db.String(300), nullable=True)
+    image_1 = db.Column(db.String(300), nullable=True)
+    image_2 = db.Column(db.String(300), nullable=True)
     map_link = db.Column(db.String(300), nullable=True)
     google_map = db.Column(db.String(300), nullable=True)
 
@@ -71,6 +72,7 @@ class UserSelection(db.Model):
 
     userselection_id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(300))
+    useremail = db.Column(db.String(300))
     house_id = db.Column(db.Integer, db.ForeignKey('realstatelisting.house_id'))
     user_choice = db.Column(db.String(300))
     
@@ -129,69 +131,71 @@ def classify(user):
     return render_template("classify.html", myVar=user)
 
 
-# Scrapy the data
-@app.route("/scrapy/<page_number>")
-def scrapy(page_number):
+# # Scrapy the data
+# @app.route("/scrapy/<page_number>")
+# def scrapy(page_number):
 
-    # run function to scrapy data
-    listings = scraped_data(page_number)
+#     # run function to scrapy data
+#     listings = scraped_data(page_number)
 
-    # add new records to database
-    # new_records = addtodatabase(listings, RealState, db)
+#     # add new records to database
+#     # new_records = addtodatabase(listings, RealState, db)
 
-    n = 0
-    for item in listings:
-        result = addonetodatabase(item, RealState, db)
-        if result == True:
-            n = n + 1
+#     n = 0
+#     for item in listings:
+#         result = addonetodatabase(item, RealState, db)
+#         if result == True:
+#             n = n + 1
 
-    return (f"New recordes added to database: {n}<br>"
-            f"<html><p><a href='/'>Home</a></p></html>"
-            )
+#     return (f"New recordes added to database: {n}<br>"
+#             f"<html><p><a href='/'>Home</a></p></html>"
+#             )
 
 
 # API to access all houses on the database
-@app.route("/api/realstatelistings/<queryfilter>")
-def realstatelistings(queryfilter):
+@app.route("/api/realstatelistings/<string:query_string>")
+def realstatelistings(query_string):
 
-    if queryfilter == 'photo':
+    if query_string == 'photo':
         # Retrieve data from database excluding the entries with no photo and no coordinates
         listings = db.session.query(
-            RealState.house_id, 
-            RealState.price, 
-            RealState.address, 
-            RealState.house_link,
-            RealState.photolink,
-            RealState.latitude,
-            RealState.longitude,
-            RealState.map_link,
-            RealState.bed,
-            RealState.bath,
-            RealState.sqft,
-            RealState.lot
-            ).filter(RealState.latitude.isnot(None)).filter(RealState.photolink != "")
-            
+                                    RealState.house_id,
+                                    RealState.address,
+                                    RealState.price,
+                                    RealState.bed,
+                                    RealState.bath,
+                                    RealState.sqft,
+                                    RealState.lot,
+                                    RealState.latitude,
+                                    RealState.longitude,
+                                    RealState.house_link,
+                                    RealState.image_1,
+                                    RealState.image_2,
+                                    RealState.map_link,
+                                    RealState.google_map
+        ).filter(RealState.latitude.isnot(None)).filter(RealState.image_1 != "").all()
     else:
         # Retrieve data from database excluding the entries with no photo and no coordinates
-        listings = db.session.query(
-            RealState.house_id, 
-            RealState.price, 
-            RealState.address, 
-            RealState.house_link,
-            RealState.photolink,
-            RealState.latitude,
-            RealState.longitude,
-            RealState.map_link,
-            RealState.bed,
-            RealState.bath,
-            RealState.sqft,
-            RealState.lot
-            )
-            # ).filter(RealState.latitude.isnot(None))
+        listings = db.session.query(RealState.house_id,
+                                    RealState.address,
+                                    RealState.price,
+                                    RealState.bed,
+                                    RealState.bath,
+                                    RealState.sqft,
+                                    RealState.lot,
+                                    RealState.latitude,
+                                    RealState.longitude,
+                                    RealState.house_link,
+                                    RealState.image_1,
+                                    RealState.image_2,
+                                    RealState.map_link,
+                                    RealState.google_map).filter(RealState.latitude.isnot(None)).all()
             
-
     # Convert the data to a dataframe
     listing_df = pd.DataFrame(listings)
+
+    # Fill NaN so JS can handle it
+    listing_df = listing_df.fillna(0)
     
     # Convert dataframe to dictionary
     listing_dict = listing_df.to_dict(orient="records")
@@ -206,11 +210,12 @@ def userselections(UserName):
 
     # Retrieve data from database
     userchoices = db.session.query(
-        UserSelection.userselection_id,
-        UserSelection.username,
-        UserSelection.house_id,
-        UserSelection.user_choice
-        ).filter_by(username = UserName)
+                                    UserSelection.userselection_id,
+                                    UserSelection.username,
+                                    UserSelection.useremail,
+                                    UserSelection.house_id,
+                                    UserSelection.user_choice
+                                ).filter_by(username = UserName)
 
     # Convert the data to a dataframe
     userchoices_df = pd.DataFrame(userchoices)
