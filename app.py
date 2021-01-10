@@ -232,6 +232,11 @@ def realstate():
 
     return render_template("realstate.html")
 
+# Real state map
+@app.route("/temp")
+def temp():
+
+    return render_template("temp.html")
 
 if __name__ == "__main__":
     # app.run(debug=True)
