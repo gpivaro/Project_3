@@ -47,9 +47,8 @@
     <!-- Add icon library -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
 
-
     <!-- Background image -->
-    <style>
+    <!-- <style>
         body {
             background-image: linear-gradient(to bottom, rgba(255, 255, 255, 0.6) 0%, rgba(255, 255, 255, 0.9) 100%), url('/static/images/real-estate-key-md.jpg');
             background-repeat: no-repeat;
@@ -57,7 +56,7 @@
             background-size: 100% 100%;
 
         }
-    </style>
+    </style> -->
 
 </head>
 
@@ -92,16 +91,18 @@
         <hr>
         <div class="row">
             <div class="col-12" style="margin-top: 2%;">
-                <h6>
+                <h4>
                     <span id="Price" style="color:black"></span>
-                </h6>
+                </h4>
+                <div style="margin-bottom: 2%;">
+                    <strong><span id="Beds" style="color:black"></span></strong> bed(s) |
+                    <strong><span id="Baths" style="color:black"></span></strong> bath(s) |
+                    <strong><span id="Sqft" style="color:#000000"></span></strong> sqft
+                </div>
+
                 <span id="Address" style="color:black"></span>
                 <br>
-                <span id="Beds" style="color:black"></span> |
-                <span id="Baths" style="color:black"></span> |
-                <span id="Sqft" style="color:black"></span>
-                <br>
-                <span id="Date" style="color:black"></span>
+                <span id="Date" style="font-size:smaller;"></span>
             </div>
         </div>
         <hr>
@@ -129,16 +130,18 @@
 
 
     <!-- Form to get the user selection -->
-    <div id="myForm" class="container">
+    <div id="myForm" class="container mb-4">
         <div class="row justify-content-md-center">
             <div class="col-md-auto">
-                <h6 style="text-align: center;">Based on the info provide, please select one of the following options:
+                <br>
+                <h6 style="text-align: center;">How do you feel about this house?
                 </h6>
+
                 <!-- <div class="btn-group" role="group" aria-label="Basic mixed styles example"> -->
                 <form method="POST" action="/classify/{{ myVar}}" id="form" role="form">
                     <!-- <label for="inputLat">Enter your name: </label> -->
                     <input id="UserName" type="hidden" type="text" name="username" value={{ myVar}}>
-                    <div class="center">
+                    <!-- <div class="center">
                         <label class="btn bg-dark">
                             <input type="radio" name="myCheckbox" value="Dislike"> Dislike<br>
                         </label>
@@ -148,13 +151,21 @@
                         <label class="btn bg-dark">
                             <input type="radio" name="myCheckbox" value="Like" checked class="fa fa-cloud"> Like<br>
                         </label>
-                    </div>
+                    </div> -->
                     <div class="center">
-                        <input type="submit" value="Submit" class="btn btn-outline-secondary btn-lg">
+                        <button type="submit" name="myCheckbox" value="Yes" class="btn btn-outline-secondary btn-lg"><i
+                                class="fa fa-heart-o"></i>
+                            Love</button>&nbsp
+                        <button type="submit" name="myCheckbox" value="Maybe"
+                            class="btn btn-outline-secondary btn-lg"><i class="fa fa-thumbs-o-up"></i>
+                            Like</button>&nbsp
+                        <button type="submit" name="myCheckbox" value="No" class="btn btn-outline-secondary btn-lg"><i
+                                class="fa fa-thumbs-o-down"></i>
+                            Dislike</button>
                     </div>
                     <input type="text" type="hidden" id="houseID" name="houseID">
                 </form>
-                <br>
+
                 <!-- </div> -->
             </div>
         </div>

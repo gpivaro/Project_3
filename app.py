@@ -151,7 +151,7 @@ def realstatelistings():
                                 RealState.map_link,
                                 RealState.google_map,
                                 RealState.created_date
-    ).filter(RealState.latitude.isnot(None)).all()
+    ).filter(RealState.latitude.isnot(None)).order_by(RealState.house_id).all()
         
     # Convert the data to a dataframe
     listing_df = pd.DataFrame(listings)
@@ -176,7 +176,8 @@ def userselections(UserName):
                                     UserSelection.username,
                                     UserSelection.useremail,
                                     UserSelection.house_id,
-                                    UserSelection.user_choice
+                                    UserSelection.user_choice,
+                                    UserSelection.created_date
                                 ).filter_by(username = UserName)
 
     # Convert the data to a dataframe

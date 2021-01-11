@@ -5,12 +5,13 @@ console.log(username);
 d3.json(`/api/userselections/${username}`).then((userdata) => {
     console.log(userdata);
     var userPreviousSelectionArray = userdata.map(element => element.house_id);
-    console.log(userPreviousSelectionArray);
+    // console.log(userPreviousSelectionArray);
 
     d3.json("/api/realstatelistings").then((data) => {
         console.log(data);
 
-        var houseSelect = 0;
+        var randomHouseIndex = Math.floor(Math.random() * Object.keys(data).length);
+        var houseSelect = randomHouseIndex;
         if (userPreviousSelectionArray.lenght != data.lenght) {
 
             console.log('No more houses to select')
@@ -24,9 +25,9 @@ d3.json(`/api/userselections/${username}`).then((userdata) => {
         else {
             // Selector to show only houses with no evaluation yet
             while (userPreviousSelectionArray.includes(data[houseSelect].house_id)) {
-                console.log("Same Number");
-                houseSelect++;
-                console.log(houseSelect);
+                houseSelect = randomHouseIndex;
+                // console.log("Same Number");
+                // console.log(houseSelect);
             }
 
 
@@ -37,11 +38,11 @@ d3.json(`/api/userselections/${username}`).then((userdata) => {
             // document.getElementById("myAnchor").href = `${data[houseSelect].house_link}`;
             // document.getElementById("myAnchor").target = "_blank";
 
-            document.getElementById('Price').textContent = `Price: $${(data[houseSelect].price).toLocaleString()}`;
+            document.getElementById('Price').textContent = `$${(data[houseSelect].price).toLocaleString()}`;
             document.getElementById('Address').textContent = `${data[houseSelect].address}`;
-            document.getElementById('Beds').textContent = `${data[houseSelect].bed} bed(s)`;
-            document.getElementById('Baths').textContent = `${data[houseSelect].bath} bath(s)`;
-            document.getElementById('Sqft').textContent = `${data[houseSelect].sqft} sqft`;
+            document.getElementById('Beds').textContent = `${data[houseSelect].bed}`;
+            document.getElementById('Baths').textContent = `${data[houseSelect].bath}`;
+            document.getElementById('Sqft').textContent = `${data[houseSelect].sqft}`;
             document.getElementById('Date').textContent = `Added on: ${data[houseSelect].created_date}`;
 
 
