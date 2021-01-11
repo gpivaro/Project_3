@@ -12,6 +12,7 @@ d3.json(`/api/userselections/${username}`).then((userdata) => {
 
 
         var houseSelect = Math.floor(Math.random() * Object.keys(data).length);
+        console.log(houseSelect);
         if (userPreviousSelectionArray.lenght != data.lenght) {
 
             console.log('No more houses to select')
@@ -25,9 +26,9 @@ d3.json(`/api/userselections/${username}`).then((userdata) => {
         else {
             // Selector to show only houses with no evaluation yet
             while (userPreviousSelectionArray.includes(data[houseSelect].house_id)) {
-                houseSelect = Math.floor(Math.random() * Object.keys(data).length);
-                // console.log("Same Number");
-                // console.log(houseSelect);
+                houseSelect++;
+                console.log("Same Number");
+                console.log(houseSelect);
             }
 
             console.log(data[houseSelect]);
