@@ -12,7 +12,7 @@ d3.json(`/api/userselections/${username}`).then((userdata) => {
 
 
         var houseSelect = Math.floor(Math.random() * Object.keys(data).length);
-        console.log(data[houseSelect].house_id);
+        console.log(`Selected house_id: ${data[houseSelect].house_id}`);
         if (userPreviousSelectionArray.lenght != data.lenght) {
 
             console.log('No more houses to select')
@@ -27,12 +27,12 @@ d3.json(`/api/userselections/${username}`).then((userdata) => {
             // Selector to show only houses with no evaluation yet
             while (userPreviousSelectionArray.includes(data[houseSelect].house_id)) {
                 console.log("Already classified by the user.");
-                console.log(data[houseSelect].house_id);
                 houseSelect++;
+                console.log(`Selected house_id: ${data[houseSelect].house_id}`);
             }
 
             console.log('--------------------------');
-            console.log(data[houseSelect].house_id);
+            console.log(`Selected house_id: ${data[houseSelect].house_id}`);
             console.log(data[houseSelect]);
 
             document.getElementById("housePhotoPage").src = `${data[houseSelect].image_1}`;
