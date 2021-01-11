@@ -182,6 +182,9 @@ def userselections(UserName):
 
     # Convert the data to a dataframe
     userchoices_df = pd.DataFrame(userchoices)
+
+    # Try outer join
+    # db.session.query(RealState,UserSelection).outerjoin(UserSelection,RealState.house_id == UserSelection.house_id).filter_by(username = 'Gabriel').all()
     
     # Convert dataframe to dictionary
     userchoices_dict = userchoices_df.to_dict(orient="records")

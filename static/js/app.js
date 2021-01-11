@@ -27,7 +27,13 @@ d3.json(`/api/userselections/${username}`).then((userdata) => {
             // Selector to show only houses with no evaluation yet
             while (userPreviousSelectionArray.includes(data[houseSelect].house_id)) {
                 console.log("Already classified by the user.");
-                houseSelect++;
+                if (houseSelect < Object.keys(data).length) {
+                    houseSelect++;
+                }
+                else {
+                    break
+                }
+
                 console.log(`Selected house_id: ${data[houseSelect].house_id}`);
             }
 
