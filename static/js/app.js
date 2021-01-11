@@ -10,8 +10,8 @@ d3.json(`/api/userselections/${username}`).then((userdata) => {
     d3.json("/api/realstatelistings").then((data) => {
         console.log(data);
 
-        var randomHouseIndex = Math.floor(Math.random() * Object.keys(data).length);
-        var houseSelect = randomHouseIndex;
+
+        var houseSelect = Math.floor(Math.random() * Object.keys(data).length);
         if (userPreviousSelectionArray.lenght != data.lenght) {
 
             console.log('No more houses to select')
@@ -25,12 +25,12 @@ d3.json(`/api/userselections/${username}`).then((userdata) => {
         else {
             // Selector to show only houses with no evaluation yet
             while (userPreviousSelectionArray.includes(data[houseSelect].house_id)) {
-                houseSelect = randomHouseIndex;
+                houseSelect = Math.floor(Math.random() * Object.keys(data).length);
                 // console.log("Same Number");
                 // console.log(houseSelect);
             }
 
-
+            console.log(data[houseSelect]);
 
             document.getElementById("housePhotoPage").src = `${data[houseSelect].image_1}`;
 
