@@ -1,4 +1,4 @@
-d3.json("/api/realstatelistings/all").then((data) => {
+d3.json("/api/realstatelistings").then((data) => {
     console.log(data);
 
     var averagePrice = 0

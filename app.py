@@ -1,25 +1,9 @@
-from scrapy_realstate import scraped_data
-from database_scripts import addonetodatabase
-
 import os
 import pandas as pd
-from flask import (
-    Flask,
-    render_template,
-    jsonify,
-    request,
-    redirect
-)
+from flask import (Flask,render_template,jsonify,request,redirect)
 from flask_sqlalchemy import SQLAlchemy
 import psycopg2
-
-try:
-    # Import DB user and password
-    from api_keys import pgadim_user
-    from api_keys import pgadim_pass
-    from api_keys import DATABASE_URL
-except:
-    pass
+import datetime
 
 
 ###############################################
@@ -31,10 +15,13 @@ app = Flask(__name__)
 # Database
 ###############################################
 
+# Verify if there is a environment variable with the DATABASE_URL.
+# Otherwise use the credentials from the api_keys file
 try:
     db_uri = os.environ['DATABASE_URL']
 except KeyError:
     # db_uri = f"postgresql://{pgadim_user}:{pgadim_pass}@localhost:5432/project3_db"
+    from api_keys import DATABASE_URL
     db_uri = DATABASE_URL
     
     print(db_uri)
@@ -62,6 +49,7 @@ class RealState(db.Model):
     image_2 = db.Column(db.String(300), nullable=True)
     map_link = db.Column(db.String(300), nullable=True)
     google_map = db.Column(db.String(300), nullable=True)
+    created_date = db.Column(db.DateTime, default=datetime.datetime.utcnow)
 
     def __repr__(self):
         return '<Listing %r>' % (self.address)
@@ -75,10 +63,17 @@ class UserSelection(db.Model):
     useremail = db.Column(db.String(300))
     house_id = db.Column(db.Integer, db.ForeignKey('realstatelisting.house_id'))
     user_choice = db.Column(db.String(300))
+    created_date = db.Column(db.DateTime, default=datetime.datetime.utcnow)
     
 
     def __repr__(self):
         return '<Listing %r>' % (self.userselection_id)
+
+
+###############################################
+# Routes
+###############################################
+
 
 # @app.before_first_request
 # def setup():
@@ -86,7 +81,8 @@ class UserSelection(db.Model):
 #     db.drop_all()
 #     db.create_all()
 
-# Home page
+
+# Home page / index page
 @app.route("/", methods=['GET', 'POST'])
 def index():
     
@@ -98,19 +94,22 @@ def index():
 
     return render_template("index.html")
 
+
+# Return all the routes available
 @app.route("/routes")
 def routes_available():
 
     return (
         f"<h4>Routes:</h4>"
-        f"<p>/classify/user</p>"
-        f"<p>/api/realstatelistings/queryfilter</p>"
-        f"<p>/scrapy/page_number</p>"
-        f"<p>/api/userselections/UserName</p>"
+        f"<p>/api/realstatelistings</p>"
+        f"<p>/classify/username</p>"
+        f"<p>/api/userselections/username</p>"
         f"<html><a href='/'>Home</a></html>"
         )
 
-@app.route("/classify/<user>", methods=['GET', 'POST'])
+
+# Page for user classification of the real state
+@app.route("/classify/<string:user>", methods=['GET', 'POST'])
 def classify(user):
     """ https://www.youtube.com/watch?v=_sgVt16Q4O4 """
     if request.method == 'POST':
@@ -131,66 +130,29 @@ def classify(user):
     return render_template("classify.html", myVar=user)
 
 
-# # Scrapy the data
-# @app.route("/scrapy/<page_number>")
-# def scrapy(page_number):
-
-#     # run function to scrapy data
-#     listings = scraped_data(page_number)
-
-#     # add new records to database
-#     # new_records = addtodatabase(listings, RealState, db)
-
-#     n = 0
-#     for item in listings:
-#         result = addonetodatabase(item, RealState, db)
-#         if result == True:
-#             n = n + 1
-
-#     return (f"New recordes added to database: {n}<br>"
-#             f"<html><p><a href='/'>Home</a></p></html>"
-#             )
-
-
 # API to access all houses on the database
-@app.route("/api/realstatelistings/<string:query_string>")
-def realstatelistings(query_string):
+@app.route("/api/realstatelistings")
+def realstatelistings():
 
-    if query_string == 'photo':
-        # Retrieve data from database excluding the entries with no photo and no coordinates
-        listings = db.session.query(
-                                    RealState.house_id,
-                                    RealState.address,
-                                    RealState.price,
-                                    RealState.bed,
-                                    RealState.bath,
-                                    RealState.sqft,
-                                    RealState.lot,
-                                    RealState.latitude,
-                                    RealState.longitude,
-                                    RealState.house_link,
-                                    RealState.image_1,
-                                    RealState.image_2,
-                                    RealState.map_link,
-                                    RealState.google_map
-        ).filter(RealState.latitude.isnot(None)).filter(RealState.image_1 != "").all()
-    else:
-        # Retrieve data from database excluding the entries with no photo and no coordinates
-        listings = db.session.query(RealState.house_id,
-                                    RealState.address,
-                                    RealState.price,
-                                    RealState.bed,
-                                    RealState.bath,
-                                    RealState.sqft,
-                                    RealState.lot,
-                                    RealState.latitude,
-                                    RealState.longitude,
-                                    RealState.house_link,
-                                    RealState.image_1,
-                                    RealState.image_2,
-                                    RealState.map_link,
-                                    RealState.google_map).filter(RealState.latitude.isnot(None)).all()
-            
+    # Retrieve data from database
+    listings = db.session.query(
+                                RealState.house_id,
+                                RealState.address,
+                                RealState.price,
+                                RealState.bed,
+                                RealState.bath,
+                                RealState.sqft,
+                                RealState.lot,
+                                RealState.latitude,
+                                RealState.longitude,
+                                RealState.house_link,
+                                RealState.image_1,
+                                RealState.image_2,
+                                RealState.map_link,
+                                RealState.google_map,
+                                RealState.created_date
+    ).filter(RealState.latitude.isnot(None)).all()
+        
     # Convert the data to a dataframe
     listing_df = pd.DataFrame(listings)
 
@@ -205,7 +167,7 @@ def realstatelistings(query_string):
 
 
 # API to access the user selections
-@app.route("/api/userselections/<UserName>")
+@app.route("/api/userselections/<string:UserName>")
 def userselections(UserName):
 
     # Retrieve data from database
@@ -226,13 +188,15 @@ def userselections(UserName):
     # Return json version of the data
     return jsonify(userchoices_dict)
 
-# Real state map
+
+# Real state map and general info
 @app.route("/realstate")
 def realstate():
 
     return render_template("realstate.html")
 
-# Real state map
+
+# Temporary route to test templates
 @app.route("/temp")
 def temp():
 

@@ -89,19 +89,22 @@
     <!-- Nav bar -->
 
     <div class="container" style="text-align: center;">
+        <hr>
         <div class="row">
             <div class="col-12" style="margin-top: 2%;">
-                <h5>
+                <h6>
                     <span id="Price" style="color:black"></span>
-                    <br>
-                    <span id="Address" style="color:black"></span>
-                    <br>
-                    <span id="Beds" style="color:black"></span> |
-                    <span id="Baths" style="color:black"></span> |
-                    <span id="Sqft" style="color:black"></span>
-                </h5>
+                </h6>
+                <span id="Address" style="color:black"></span>
+                <br>
+                <span id="Beds" style="color:black"></span> |
+                <span id="Baths" style="color:black"></span> |
+                <span id="Sqft" style="color:black"></span>
+                <br>
+                <span id="Date" style="color:black"></span>
             </div>
         </div>
+        <hr>
     </div>
 
 
@@ -129,24 +132,25 @@
     <div id="myForm" class="container">
         <div class="row justify-content-md-center">
             <div class="col-md-auto">
-                <h6 style="text-align: center;">Select one option for this house:</h6>
+                <h6 style="text-align: center;">Based on the info provide, please select one of the following options:
+                </h6>
                 <!-- <div class="btn-group" role="group" aria-label="Basic mixed styles example"> -->
                 <form method="POST" action="/classify/{{ myVar}}" id="form" role="form">
                     <!-- <label for="inputLat">Enter your name: </label> -->
                     <input id="UserName" type="hidden" type="text" name="username" value={{ myVar}}>
                     <div class="center">
-                        <label class="btn btn-danger">
+                        <label class="btn bg-dark">
                             <input type="radio" name="myCheckbox" value="Dislike"> Dislike<br>
                         </label>
-                        <label class="btn btn-info">
+                        <label class="btn bg-dark">
                             <input type="radio" name="myCheckbox" value="Missing Info"> Missing Info<br>
                         </label>
-                        <label class="btn btn-success">
+                        <label class="btn bg-dark">
                             <input type="radio" name="myCheckbox" value="Like" checked class="fa fa-cloud"> Like<br>
                         </label>
                     </div>
                     <div class="center">
-                        <input type="submit" value="Submit" class="btn btn-outline-secondary btn-lg btn-block">
+                        <input type="submit" value="Submit" class="btn btn-outline-secondary btn-lg">
                     </div>
                     <input type="text" type="hidden" id="houseID" name="houseID">
                 </form>

@@ -7,7 +7,7 @@ d3.json(`/api/userselections/${username}`).then((userdata) => {
     var userPreviousSelectionArray = userdata.map(element => element.house_id);
     console.log(userPreviousSelectionArray);
 
-    d3.json("/api/realstatelistings/photo").then((data) => {
+    d3.json("/api/realstatelistings").then((data) => {
         console.log(data);
 
         var houseSelect = 0;
@@ -38,10 +38,11 @@ d3.json(`/api/userselections/${username}`).then((userdata) => {
             // document.getElementById("myAnchor").target = "_blank";
 
             document.getElementById('Price').textContent = `Price: $${(data[houseSelect].price).toLocaleString()}`;
-            document.getElementById('Address').textContent = `Address: ${data[houseSelect].address}`;
-            document.getElementById('Beds').textContent = `Beds: ${data[houseSelect].bed}`;
-            document.getElementById('Baths').textContent = `Baths: ${data[houseSelect].bath}`;
-            document.getElementById('Sqft').textContent = `sqft: ${data[houseSelect].sqft}`;
+            document.getElementById('Address').textContent = `${data[houseSelect].address}`;
+            document.getElementById('Beds').textContent = `${data[houseSelect].bed} bed(s)`;
+            document.getElementById('Baths').textContent = `${data[houseSelect].bath} bath(s)`;
+            document.getElementById('Sqft').textContent = `${data[houseSelect].sqft} sqft`;
+            document.getElementById('Date').textContent = `Added on: ${data[houseSelect].created_date}`;
 
 
 
