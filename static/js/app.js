@@ -1,62 +1,71 @@
+/* Date.prototype.toLocaleDateString()
+     https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Date/toLocaleDateString */
+var options = { year: 'numeric', month: 'numeric', day: 'numeric' };
+options.timeZone = 'UTC';
+
 var username = document.getElementById("UserName").value;
-console.log(username);
+console.log(`Current username: ${username}`);
 
 
 d3.json(`/api/userselections/${username}`).then((userdata) => {
     console.log(userdata);
     var userPreviousSelectionArray = userdata.map(element => element.house_id);
-    // console.log(userPreviousSelectionArray);
 
     d3.json("/api/realstatelistings").then((data) => {
         console.log(data);
 
-
+        // For randomization of houses presented for selection
         var houseSelect = Math.floor(Math.random() * Object.keys(data).length);
+
+        // ********* --->>>>    For debug
+        // Use this values to force a scenario where the user has no more houses to select from.
+        // var houseSelect = (Object.keys(data).length) - 1;
+        // userPreviousSelectionArray = [data[(Object.keys(data).length) - 1].house_id];
+        // console.log(data[(Object.keys(data).length) - 1].house_id);
+
+
         console.log(`Selected house_id: ${data[houseSelect].house_id}`);
         if (userPreviousSelectionArray.lenght != data.lenght) {
 
             console.log('No more houses to select')
-            var myobj = document.getElementById("housePhotoPage");
-            myobj.remove();
+            // var myobj = document.getElementById("housePhotoPage");
+            // myobj.remove();
 
-            var myobj = document.getElementById("myForm");
-            myobj.remove();
+            // var myobj = document.getElementById("myForm");
+            // myobj.remove();
 
         }
         else {
             // Selector to show only houses with no evaluation yet
             while (userPreviousSelectionArray.includes(data[houseSelect].house_id)) {
                 console.log("Already classified by the user.");
-                if (houseSelect < Object.keys(data).length) {
-                    houseSelect++;
-                }
-                else {
+
+                houseSelect++;
+                console.log(houseSelect)
+                if (houseSelect === Object.keys(data).length) {
+                    console.log('Stop')
+                    // Simulate an HTTP redirect:
+                    window.location.replace("/end-classification");
                     break
                 }
-
-                console.log(`Selected house_id: ${data[houseSelect].house_id}`);
             }
 
+            // ********* --->>>>    For debug
             console.log('--------------------------');
             console.log(`Selected house_id: ${data[houseSelect].house_id}`);
             console.log(data[houseSelect]);
 
-            document.getElementById("housePhotoPage").src = `${data[houseSelect].image_1}`;
-
-            // document.getElementById("myAnchor").innerHTML = `Address: ${data[houseSelect].address}`;
-            // document.getElementById("myAnchor").href = `${data[houseSelect].house_link}`;
-            // document.getElementById("myAnchor").target = "_blank";
-
+            var added_date = data[houseSelect].created_date;
             document.getElementById('Price').textContent = `$${(data[houseSelect].price).toLocaleString()}`;
             document.getElementById('Address').textContent = `${data[houseSelect].address}`;
             document.getElementById('Beds').textContent = `${data[houseSelect].bed}`;
             document.getElementById('Baths').textContent = `${data[houseSelect].bath}`;
-            document.getElementById('Sqft').textContent = `${data[houseSelect].sqft}`;
-            document.getElementById('Date').textContent = `Added on: ${data[houseSelect].created_date}`;
+            document.getElementById('Sqft').textContent = `${(data[houseSelect].sqft).toLocaleString()}`;
+            document.getElementById('Date').textContent = `Added to the database on: ${added_date}`;
 
-
-
-            // document.getElementById("houseWebPage").src = `${data[0].house_link}`;
+            var myobj = document.getElementById("housePhotoPage_1");
+            var myobj = document.getElementById("mapLoading");
+            myobj.remove();
 
             // Leaft let map
             var map = L.map('map', {
@@ -74,8 +83,24 @@ d3.json(`/api/userselections/${username}`).then((userdata) => {
                 .bindPopup(`<h6>Details:</h6> <hr> 
                 <strong>Price:</strong> $${(data[houseSelect].price).toLocaleString()} <br/>
                 <strong>Address:</strong> ${data[houseSelect].address} <br/>
-                <strong>More info:</strong> <a href="${data[houseSelect].house_link}" target = "_blank">click here</a> <br/>`)
-                .openPopup();
+                <strong>More info:</strong> <a href="${data[houseSelect].house_link}" target = "_blank">click here</a> <br/>`);
+            // .openPopup();
+
+
+            // Insert the house photo on the carousel
+            if (data[houseSelect].image_1) {
+                document.getElementById("housePhotoPage_1").src = `${data[houseSelect].image_1}`;
+            }
+            // If only one image available, show the same image on both slides
+            if (data[houseSelect].image_2) {
+                document.getElementById("housePhotoPage_2").src = `${data[houseSelect].image_2}`;
+            }
+            else {
+                document.getElementById("housePhotoPage_2").src = `${data[houseSelect].image_1}`;
+                // var myobj = document.getElementsByClassName("carousel-item");
+                // myobj.remove();
+            }
+
 
 
             document.getElementById("houseID").value = `${data[houseSelect].house_id}`;

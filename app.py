@@ -200,11 +200,16 @@ def realstate():
     return render_template("realstate.html")
 
 
-# Temporary route to test templates
-@app.route("/temp")
-def temp():
+# Route when the user's has no more houses to select
+@app.route("/end-classification")
+def end_classification():
+        
+    return (f"""<h4>Thanks.</h4>
+            <p>You have made your selection for all the houses that we have available at this moment. <br>
+            We will see you soon with more houses.</p>"""
+            f"<html><a href='/'>Home</a></html>")
 
-    return render_template("temp.html")
+
 
 if __name__ == "__main__":
     # app.run(debug=True)

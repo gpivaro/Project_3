@@ -44,4 +44,34 @@ d3.json("/api/realstatelistings").then((data) => {
     };
 
     L.control.layers(baseMaps, overlayMaps).addTo(map);
+
+
+    // Plotly bubble chart
+    var trace1 = {
+        x: data.map(element => element.sqft),
+        y: data.map(element => element.price),
+        text: ['A<br>size: 40', 'B<br>size: 60', 'C<br>size: 80', 'D<br>size: 100'],
+        mode: 'markers',
+        marker: {
+            // color: ['rgb(93, 164, 214)', 'rgb(255, 144, 14)', 'rgb(44, 160, 101)', 'rgb(255, 65, 54)'],
+            // size: data.map(element => element.lot / 1000)
+        }
+    };
+
+    var data = [trace1];
+
+    var layout = {
+        title: 'House Price vs. Size',
+        showlegend: false,
+        height: 600,
+        width: 1000,
+        xaxis: {
+            title: "Size (sqft)"
+        },
+        yaxis: {
+            title: "Price ($)"
+        }
+    };
+
+    Plotly.newPlot('bubbleChart', data, layout);
 })

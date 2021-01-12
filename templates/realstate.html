@@ -44,16 +44,10 @@
     <link href='https://api.mapbox.com/mapbox.js/plugins/leaflet-fullscreen/v1.0.1/leaflet.fullscreen.css'
         rel='stylesheet' />
 
-    <!-- Background image -->
-    <style>
-        body {
-            background-image: linear-gradient(to bottom, rgba(255, 255, 255, 0.6) 0%, rgba(255, 255, 255, 0.9) 100%), url('/static/images/real-estate-key-md.jpg');
-            background-repeat: no-repeat;
-            background-attachment: fixed;
-            background-size: 100% 100%;
+    <!-- plotly -->
+    <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
 
-        }
-    </style>
+
 
 </head>
 
@@ -88,8 +82,8 @@
     <div class="container">
         <div class="row">
             <div class="col-12 col-lg-4" style="margin-top: 2%;">
-                <h5 style="margin-top: 45%;">
-                    Real state on database: <span id="RealStateTotal" style="color:black"></span>
+                <h5 style="margin-top: 0%;">
+                    Houses on database: <span id="RealStateTotal" style="color:black"></span>
                     <br><br>
                     Average Price:
                     <span id="AveragePrice" style="color:black"></span>
@@ -101,16 +95,19 @@
         </div>
     </div>
 
+    <div class="container">
+        <div class="row">
+            <div class="col-12" style="margin-top: 2%;">
+                <div id="bubbleChart"></div>
+            </div>
+        </div>
+    </div>
+
+
     <!-- JS to load house info on the page -->
     <script src="{{ url_for('static', filename='js/realstate.js')}}"></script>
 
-    <div>
-        <footer class="footer">
-            <spam class="bottom" style="padding-left: 1%;">Real State Machine Learning Recommendation by Gabriel Pivaro
-                |
-                2020</spam>
-        </footer>
-    </div>
+
 </body>
 
 </html>

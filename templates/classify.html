@@ -5,7 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="shortcut icon" href="{{ url_for('static', filename='images/favicon.ico')}}" type="image/x-icon">
-    <title>Find Your Dream House</title>
+    <title>Find Your Dream Home</title>
 
     <!-- jQuery and JS bundle w/ Popper.js -->
     <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"
@@ -58,6 +58,13 @@
         }
     </style> -->
 
+    <style>
+        /* Make the image fully responsive */
+        .carousel-inner img {
+            width: 100%;
+            /*height: 100%;*/
+        }
+    </style>
 </head>
 
 <body>
@@ -87,96 +94,114 @@
     </nav>
     <!-- Nav bar -->
 
+    <!-- Form to get the user selection -->
+    <div id="myForm" class="container">
+        <div class="row justify-content-md-center">
+            <div class="col-md-auto">
+                <h6 style="text-align: center;">How do you feel about this house?
+                </h6>
+                <form method="POST" action="/classify/{{ myVar}}" id="form" role="form">
+                    <!-- <label for="inputLat">Enter your name: </label> -->
+                    <input id="UserName" type="hidden" type="text" name="username" value={{ myVar}}>
+                    <input id="houseID" type="hidden" type="text" name="houseID">
+                    <!-- <div class="center">
+                    </div> -->
+                    <div class="center">
+                        <button type="submit" name="myCheckbox" value="Yes"
+                            class="btn btn-outline-secondary btn-lg bg-dark"><i class="fa fa-heart-o"></i>
+                            Love</button>&nbsp
+                        <button type="submit" name="myCheckbox" value="Maybe"
+                            class="btn btn-outline-secondary btn-lg bg-dark"><i class="fa fa-thumbs-o-up"></i>
+                            Like</button>&nbsp
+                        <button type="submit" name="myCheckbox" value="No"
+                            class="btn btn-outline-secondary btn-lg bg-dark"><i class="fa fa-thumbs-o-down"></i>
+                            Dislike</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    <!-- Form to get the user selection -->
+
+    <!-- House description -->
     <div class="container" style="text-align: center;">
         <hr>
         <div class="row">
-            <div class="col-12" style="margin-top: 2%;">
+            <div class="col-12" style="margin-top: 0%;">
                 <h4>
                     <span id="Price" style="color:black"></span>
                 </h4>
-                <div style="margin-bottom: 2%;">
-                    <strong><span id="Beds" style="color:black"></span></strong> bed(s) |
-                    <strong><span id="Baths" style="color:black"></span></strong> bath(s) |
-                    <strong><span id="Sqft" style="color:#000000"></span></strong> sqft
+                <div style="margin-bottom: 1%;">
+                    <strong><span id="Beds"></span></strong> bed(s) |
+                    <strong><span id="Baths"></span></strong> bath(s) |
+                    <strong><span id="Sqft"></span></strong> sqft
                 </div>
 
                 <span id="Address" style="color:black"></span>
-                <br>
-                <span id="Date" style="font-size:smaller;"></span>
             </div>
         </div>
         <hr>
     </div>
-
+    <!-- House description -->
 
     <div class="container">
         <div class="row">
             <div class="col-12 col-lg-6" style="margin-top: 2%;">
-                <img id="housePhotoPage" src="#">
-                <br />
+                <!-- <img id="housePhotoPage" src="{{ url_for('static', filename='/images/loading_image.jpg')}}"> -->
+
+
+                <!-- Carousel -->
+                <!-- https://www.w3schools.com/bootstrap4/bootstrap_carousel.asp -->
+                <div id="demo" class="carousel slide" data-ride="carousel">
+
+                    <!-- Indicators -->
+                    <ul class="carousel-indicators">
+                        <li data-target="#demo" data-slide-to="0" class="active"></li>
+                        <li data-target="#demo" data-slide-to="1"></li>
+                    </ul>
+
+                    <!-- The slideshow -->
+                    <div class="carousel-inner">
+                        <div class="carousel-item active">
+                            <img id="housePhotoPage_1"
+                                src="{{ url_for('static', filename='/images/loading_image.jpg')}}" alt="House Image">
+                        </div>
+                        <div class="carousel-item">
+                            <img id="housePhotoPage_2"
+                                src="{{ url_for('static', filename='/images/loading_image.jpg')}}" alt="House Image">
+                        </div>
+                    </div>
+                    <br />
+                    <!-- Left and right controls -->
+                    <a class="carousel-control-prev" href="#demo" data-slide="prev">
+                        <span class="carousel-control-prev-icon"></span>
+                    </a>
+                    <a class="carousel-control-next" href="#demo" data-slide="next">
+                        <span class="carousel-control-next-icon"></span>
+                    </a>
+                </div>
+                <!-- Carousel -->
 
             </div>
             <div class="col-12 col-lg-6" style="margin-top: 2%;">
-                <div id="map"></div>
-            </div>
-        </div>
-        <!-- <a id="myAnchor" href="#"></a> -->
-
-
-    </div>
-    <!-- <div id="map"></div> -->
-
-
-
-
-    <!-- Form to get the user selection -->
-    <div id="myForm" class="container mb-4">
-        <div class="row justify-content-md-center">
-            <div class="col-md-auto">
-                <br>
-                <h6 style="text-align: center;">How do you feel about this house?
-                </h6>
-
-                <!-- <div class="btn-group" role="group" aria-label="Basic mixed styles example"> -->
-                <form method="POST" action="/classify/{{ myVar}}" id="form" role="form">
-                    <!-- <label for="inputLat">Enter your name: </label> -->
-                    <input id="UserName" type="hidden" type="text" name="username" value={{ myVar}}>
-                    <!-- <div class="center">
-                        <label class="btn bg-dark">
-                            <input type="radio" name="myCheckbox" value="Dislike"> Dislike<br>
-                        </label>
-                        <label class="btn bg-dark">
-                            <input type="radio" name="myCheckbox" value="Missing Info"> Missing Info<br>
-                        </label>
-                        <label class="btn bg-dark">
-                            <input type="radio" name="myCheckbox" value="Like" checked class="fa fa-cloud"> Like<br>
-                        </label>
-                    </div> -->
-                    <div class="center">
-                        <button type="submit" name="myCheckbox" value="Yes" class="btn btn-outline-secondary btn-lg"><i
-                                class="fa fa-heart-o"></i>
-                            Love</button>&nbsp
-                        <button type="submit" name="myCheckbox" value="Maybe"
-                            class="btn btn-outline-secondary btn-lg"><i class="fa fa-thumbs-o-up"></i>
-                            Like</button>&nbsp
-                        <button type="submit" name="myCheckbox" value="No" class="btn btn-outline-secondary btn-lg"><i
-                                class="fa fa-thumbs-o-down"></i>
-                            Dislike</button>
-                    </div>
-                    <input type="text" type="hidden" id="houseID" name="houseID">
-                </form>
-
-                <!-- </div> -->
+                <div id="map"><img id="mapLoading" src="{{ url_for('static', filename='/images/loading_image.jpg')}}">
+                </div>
             </div>
         </div>
     </div>
+
+    <div class="container">
+        <div class="row">
+            <div class="col-12" style="margin-bottom: 2%;">
+                <span id="Date" style="font-size:small;"></span>
+            </div>
+        </div>
+    </div>
+
+
 
     <!-- JS to load house info on the page -->
     <script src="{{ url_for('static', filename='js/app.js')}}"></script>
-
-
-
-
 </body>
 
 </html>
