@@ -1,3 +1,9 @@
+var height_size = 500;
+var width_size = 550;
+
+// Responsive chart
+var config = { responsive: true }
+
 d3.json("/api/realstatelistings").then((data) => {
     console.log(data);
 
@@ -58,13 +64,13 @@ d3.json("/api/realstatelistings").then((data) => {
         }
     };
 
-    var data = [trace1];
+    var dataPlot1 = [trace1];
 
     var layout = {
         title: 'House Price vs. Size',
         showlegend: false,
-        height: 600,
-        width: 1000,
+        height: height_size,
+        width: width_size,
         xaxis: {
             title: "Size (sqft)"
         },
@@ -73,5 +79,34 @@ d3.json("/api/realstatelistings").then((data) => {
         }
     };
 
-    Plotly.newPlot('bubbleChart', data, layout);
+    Plotly.newPlot('bubbleChart', dataPlot1, layout, config);
+
+    var trace2 = {
+        x: data.map(element => element.latitude),
+        y: data.map(element => element.longitude),
+        text: ['A<br>size: 40', 'B<br>size: 60', 'C<br>size: 80', 'D<br>size: 100'],
+        mode: 'markers',
+        marker: {
+            color: data.map(element => element.lot / 1000),
+            // size: data.map(element => element.lot / 1000)
+        }
+    };
+
+    var layout = {
+        title: 'House Location vs. Price',
+        showlegend: false,
+        height: height_size,
+        width: width_size,
+        xaxis: {
+            title: "Latitude"
+        },
+        yaxis: {
+            title: "Longitude"
+        }
+    };
+
+    var dataPlot2 = [trace2];
+
+
+    Plotly.newPlot('scatterPlot', dataPlot2, layout, config);
 })

@@ -358,7 +358,7 @@ def scrapy_real_state(page_number):
 
     print(f"--> {nn} records updated.")
 
-    session.close()
+    
 
     ### Query database
     # Query all records and create a list with the returned data
@@ -366,7 +366,8 @@ def scrapy_real_state(page_number):
     print('')
     print(f"Current records on database: {len(query_result)}.")
 
+    session.close()
 
 # for jj in range(12,14):
 
-scrapy_real_state(23)
+scrapy_real_state(31)
