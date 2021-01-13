@@ -9,3 +9,5 @@ https://www.ncdc.noaa.gov/data-access
 
 
 https://opencagedata.com/api
+
+https://github.com/gpivaro/machine-learning-challenge
