@@ -209,7 +209,9 @@ def end_classification():
             We will see you soon with more houses.</p>"""
             f"<html><a href='/'>Home</a></html>")
 
-
+@app.route("/testpage")
+def testpage():
+    return render_template("temp_modal.html")
 
 if __name__ == "__main__":
     # app.run(debug=True)

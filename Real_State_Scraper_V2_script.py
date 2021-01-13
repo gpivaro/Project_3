@@ -370,4 +370,4 @@ def scrapy_real_state(page_number):
 
 # for jj in range(12,14):
 
-scrapy_real_state(31)
+scrapy_real_state(1)

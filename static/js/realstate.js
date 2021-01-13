@@ -4,6 +4,12 @@ var width_size = 550;
 // Responsive chart
 var config = { responsive: true }
 
+// Define a function we want to run once for each feature in the features array
+function addPopup(feature, layer) {
+    // Give each feature a popup describing the place and time of the earthquake
+    return layer.bindPopup(`<h6 style="font-weight: bold;">Zip Code: ${feature.properties.ZCTA5CE10}</h6>`);
+}
+
 d3.json("/api/realstatelistings").then((data) => {
     console.log(data);
 
@@ -33,23 +39,52 @@ d3.json("/api/realstatelistings").then((data) => {
 
     var realstateLayer = L.layerGroup(realstatemarkers);
 
-    // Leaft let map
-    var map = L.map('map', {
-        center: [29.75, -95.37],
-        zoom: 8.5,
-        scrollWheelZoom: false, //Disable scroll wheel zoom on Leaflet
-        fullscreenControl: true,
-        layers: [OpenStreetTiles, realstateLayer]
+
+
+    url_zip_codes = "https://raw.githubusercontent.com/OpenDataDE/State-zip-code-GeoJSON/master/tx_texas_zip_codes_geo.min.json"
+
+    // Data Loading in D3: https://www.tutorialsteacher.com/d3js/loading-data-from-file-in-d3js
+    // Promises chaining https://javascript.info/promise-chaining
+    // Using GeoJSON with Leaflet https://leafletjs.com/examples/geojson/
+    // url_tectonics = 'https://raw.githubusercontent.com/gpivaro/leaflet-challenge/main/data/tectonicplates-master/GeoJSON/PB2002_boundaries.json'
+    // d3.json("/data/tectonicplates-master/GeoJSON/PB2002_boundaries.json").then((tectonicPlatesData) => {
+    d3.json(url_zip_codes).then((TexasZipCodeData) => {
+        console.log(TexasZipCodeData);
+        console.log(TexasZipCodeData.features);
+        console.log(TexasZipCodeData.features[0].properties.ZCTA5CE10);
+
+        TexasZipCodeData.features.forEach(element => {
+            if (element.properties.ZCTA5CE10 === "77002") {
+                console.log(element)
+            }
+        })
+
+        var zipCodesLayer = L.geoJSON(TexasZipCodeData, {
+            onEachFeature: addPopup,
+        });
+
+
+        // Leaft let map
+        var map = L.map('map', {
+            center: [29.75, -95.37],
+            zoom: 8.5,
+            scrollWheelZoom: false, //Disable scroll wheel zoom on Leaflet
+            fullscreenControl: true,
+            layers: [OpenStreetTiles, realstateLayer]
+        });
+        var baseMaps = {
+            "Streets Map": OpenStreetTiles
+        };
+
+        var overlayMaps = {
+            "Houses": realstateLayer,
+            "Zip Codes": zipCodesLayer
+        };
+
+        L.control.layers(baseMaps, overlayMaps).addTo(map);
+
     });
-    var baseMaps = {
-        "Streets": OpenStreetTiles
-    };
 
-    var overlayMaps = {
-        "Houses": realstateLayer
-    };
-
-    L.control.layers(baseMaps, overlayMaps).addTo(map);
 
 
     // Plotly bubble chart
@@ -109,4 +144,8 @@ d3.json("/api/realstatelistings").then((data) => {
 
 
     Plotly.newPlot('scatterPlot', dataPlot2, layout, config);
+
+
+
+
 })
