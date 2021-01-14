@@ -1,0 +1,37 @@
+{% extends "base.html" %}
+
+{% block content%}
+
+
+
+<div class="container">
+    <div class="row">
+        <div class="col-12" style="margin-top: 2%;">
+            <h5 style="margin-top: 0%;">
+                Houses on database: <span id="RealStateTotal" style="color:black"></span>
+                <br><br>
+                Average Price:
+                <span id="AveragePrice" style="color:black"></span>
+            </h5>
+        </div>
+    </div>
+</div>
+
+<div class="container" style="margin-top: 2%;">
+    <div class="row justify-content-md-center" style="border: 1px solid black; padding:2%">
+        <div class="col-12 col-lg-6" style="border: 1px solid lightgray;margin-left: auto;
+            margin-right: auto;">
+            <div id="bubbleChart"></div>
+        </div>
+        <div class="col-12 col-lg-6" style="border: 1px solid lightgray;margin-left: auto;
+            margin-right: auto;">
+            <div id="scatterPlot"></div>
+        </div>
+    </div>
+</div>
+
+
+<!-- JS to load house info on the page -->
+<script src="{{ url_for('static', filename='js/analysis.js')}}"></script>
+
+{% endblock content%}

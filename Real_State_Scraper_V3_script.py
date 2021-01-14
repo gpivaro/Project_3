@@ -62,7 +62,7 @@ def scrapy_real_state_loop(page_number_list):
         # Use the browser to visit the url
         browser.visit(query_url)
         # Wait for x seconds for error purpouses
-        time.sleep(5)
+        time.sleep(60)
 
         # Return the rendered page by the browser
         html_realtor = browser.html
@@ -213,7 +213,10 @@ def scrapy_real_state_loop(page_number_list):
 
         # When you’ve finished testing, close your browser using browser.quit:
         browser.quit()
-        time.sleep(61)
+        if results == 0:
+            time.sleep(300)
+        else:
+            time.sleep(60)
 
     ### Data Cleaning
     # Save the data to a dataframe
@@ -324,4 +327,4 @@ def scrapy_real_state_loop(page_number_list):
     session.close()
 
 
-scrapy_real_state_loop(list(range(41, 45)))
+scrapy_real_state_loop(list(range(11, 20)))

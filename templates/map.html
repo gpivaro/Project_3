@@ -1,0 +1,39 @@
+{% extends "base.html" %}
+
+{% block content%}
+
+<div class="container">
+    <div class="row">
+        <div class="col-12" style="margin-top: 2%;">
+            <h5 style="margin-top: 0%;">
+                Houses on database: <span id="RealStateTotal" style="color:black"></span>
+                <br><br>
+                Average Price:
+                <span id="AveragePrice" style="color:black"></span>
+            </h5>
+        </div>
+    </div>
+</div>
+
+<div class="container" style="margin-top: 2%;">
+    <div class="row">
+        <div class="col-12">
+            <div id="map" style="padding:0%;border:1px solid;"></div>
+        </div>
+    </div>
+</div>
+
+<div class="container">
+    <div class="row">
+        <div class="col-12" style="margin-top: 2%;">
+            <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Optio natus, soluta, aut est labore minus,
+                veritatis assumenda corrupti porro necessitatibus minima voluptatum amet quisquam obcaecati. Vero
+                voluptatibus architecto tempora iure.</p>
+        </div>
+    </div>
+</div>
+
+<!-- JS to load house info on the page -->
+<script src="{{ url_for('static', filename='js/map.js')}}"></script>
+
+{% endblock content%}

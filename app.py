@@ -194,10 +194,16 @@ def userselections(UserName):
 
 
 # Real state map and general info
-@app.route("/realstate")
-def realstate():
+@app.route("/analysis")
+def analysis():
 
-    return render_template("realstate.html")
+    return render_template("analysis.html")
+
+# Real state map
+@app.route("/map")
+def map_view():
+
+    return render_template("map.html")
 
 
 # Route when the user's has no more houses to select

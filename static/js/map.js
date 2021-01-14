@@ -1,13 +1,9 @@
-var height_size = 500;
-var width_size = 550;
 
-// Responsive chart
-var config = { responsive: true }
 
 // Define a function we want to run once for each feature in the features array
 function addPopup(feature, layer) {
     // Give each feature a popup describing the place and time of the earthquake
-    return layer.bindPopup(`<h6 style="font-weight: bold;">Zip Code: ${feature.properties.ZCTA5CE10}</h6>`);
+    return layer.bindPopup(`<p><span style="font-weight: bold;">Zip Code: </span>${feature.properties.ZCTA5CE10}</p>`);
 }
 
 d3.json("/api/realstatelistings").then((data) => {
@@ -67,13 +63,14 @@ d3.json("/api/realstatelistings").then((data) => {
         // Leaft let map
         var map = L.map('map', {
             center: [29.75, -95.37],
-            zoom: 8.5,
+            zoom: 11,
             scrollWheelZoom: false, //Disable scroll wheel zoom on Leaflet
             fullscreenControl: true,
+
             layers: [OpenStreetTiles, realstateLayer]
         });
         var baseMaps = {
-            "Streets Map": OpenStreetTiles
+            "Streets": OpenStreetTiles
         };
 
         var overlayMaps = {
@@ -81,69 +78,9 @@ d3.json("/api/realstatelistings").then((data) => {
             "Zip Codes": zipCodesLayer
         };
 
-        L.control.layers(baseMaps, overlayMaps).addTo(map);
+        L.control.layers(baseMaps, overlayMaps, { collapsed: false }).addTo(map);
 
     });
-
-
-
-    // Plotly bubble chart
-    var trace1 = {
-        x: data.map(element => element.sqft),
-        y: data.map(element => element.price),
-        text: ['A<br>size: 40', 'B<br>size: 60', 'C<br>size: 80', 'D<br>size: 100'],
-        mode: 'markers',
-        marker: {
-            // color: ['rgb(93, 164, 214)', 'rgb(255, 144, 14)', 'rgb(44, 160, 101)', 'rgb(255, 65, 54)'],
-            // size: data.map(element => element.lot / 1000)
-        }
-    };
-
-    var dataPlot1 = [trace1];
-
-    var layout = {
-        title: 'House Price vs. Size',
-        showlegend: false,
-        height: height_size,
-        width: width_size,
-        xaxis: {
-            title: "Size (sqft)"
-        },
-        yaxis: {
-            title: "Price ($)"
-        }
-    };
-
-    Plotly.newPlot('bubbleChart', dataPlot1, layout, config);
-
-    var trace2 = {
-        x: data.map(element => element.latitude),
-        y: data.map(element => element.longitude),
-        text: ['A<br>size: 40', 'B<br>size: 60', 'C<br>size: 80', 'D<br>size: 100'],
-        mode: 'markers',
-        marker: {
-            color: data.map(element => element.lot / 1000),
-            // size: data.map(element => element.lot / 1000)
-        }
-    };
-
-    var layout = {
-        title: 'House Location vs. Price',
-        showlegend: false,
-        height: height_size,
-        width: width_size,
-        xaxis: {
-            title: "Latitude"
-        },
-        yaxis: {
-            title: "Longitude"
-        }
-    };
-
-    var dataPlot2 = [trace2];
-
-
-    Plotly.newPlot('scatterPlot', dataPlot2, layout, config);
 
 
 
