@@ -61,6 +61,15 @@ d3.json(`/api/userselections/${username}`).then((userdata) => {
             document.getElementById('Beds').textContent = `${data[houseSelect].bed}`;
             document.getElementById('Baths').textContent = `${data[houseSelect].bath}`;
             document.getElementById('Sqft').textContent = `${(data[houseSelect].sqft).toLocaleString()}`;
+
+            if (data[houseSelect].lot === 0) {
+                document.getElementById('SqftLot').textContent = `N/A`;
+            }
+            else {
+                document.getElementById('SqftLot').textContent = `${(data[houseSelect].lot).toLocaleString()}`;
+            }
+
+
             document.getElementById('Date').textContent = `Added to the database on: ${added_date}`;
 
             var myobj = document.getElementById("housePhotoPage_1");
