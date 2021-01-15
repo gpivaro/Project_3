@@ -31,8 +31,10 @@ from api_keys import positionstack_key
 from api_keys import opencagedata_API
 from api_keys import DATABASE_URL
 
+
 def scrapy_real_state_loop(page_number_list):
     realstate_list = []
+    sleep_for = 61
     for page_number in page_number_list:
 
         ### Setup Splinter (For Mac)
@@ -62,7 +64,7 @@ def scrapy_real_state_loop(page_number_list):
         # Use the browser to visit the url
         browser.visit(query_url)
         # Wait for x seconds for error purpouses
-        time.sleep(60)
+        time.sleep(sleep_for)
 
         # Return the rendered page by the browser
         html_realtor = browser.html
@@ -215,6 +217,7 @@ def scrapy_real_state_loop(page_number_list):
         browser.quit()
         if results == 0:
             time.sleep(300)
+            sleep_for = 100
         else:
             time.sleep(60)
 
@@ -327,4 +330,4 @@ def scrapy_real_state_loop(page_number_list):
     session.close()
 
 
-scrapy_real_state_loop(list(range(11, 20)))
+scrapy_real_state_loop(list(range(1, 40)))
