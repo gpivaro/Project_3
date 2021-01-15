@@ -15,18 +15,21 @@ d3.json("/api/realstatelistings").then((data) => {
     })
     averagePrice = Math.round(averagePrice / data.length);
 
-    document.getElementById('RealStateTotal').textContent = `${data.length}`;
+    document.getElementById('RealStateTotal').textContent = `${data.length.toLocaleString()}`;
     document.getElementById('AveragePrice').textContent = `$${averagePrice.toLocaleString()}`;
 
     // To use OpenStreetMap instead of MapBox
-    var attribution = "Map data &copy; <a href=\"https://www.openstreetmap.org/\">OpenStreetMap</a> contributors, <a href=\"https://creativecommons.org/licenses/by-sa/2.0/\">CC-BY-SA</a>, Imagery © <a href=\"https://www.mapbox.com/\">Mapbox</a>";
+    var attribution = '"Map data &copy; <a href=\"https://www.openstreetmap.org/\">OpenStreetMap</a> \
+                        contributors, <a href=\"https://creativecommons.org/licenses/by-sa/2.0/\">CC-BY-SA</a>, \
+                        Imagery © <a href=\"https://www.mapbox.com/\">Mapbox</a>"';
     var titleUrl = 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png';
     var OpenStreetTiles = L.tileLayer(titleUrl, { attribution });
 
     realstatemarkers = []
     data.forEach(element => {
         var marker = L.marker([element.latitude, element.longitude])
-            .bindPopup(`<h6>Details:</h6> <hr> 
+            .bindPopup(`<h6>House details:</h6> <hr> 
+            <img style="height: 120px;" src="${element.image_1}"><br/><br/>
             <strong>Price:</strong> $${(element.price).toLocaleString()} <br/>
             <strong>Address:</strong> ${element.address} <br/>
             <strong>More info:</strong> <a href="${element.house_link}" target = "_blank">click here</a> <br/>`);
@@ -36,8 +39,8 @@ d3.json("/api/realstatelistings").then((data) => {
     var realstateLayer = L.layerGroup(realstatemarkers);
 
 
-
-    url_zip_codes = "https://raw.githubusercontent.com/OpenDataDE/State-zip-code-GeoJSON/master/tx_texas_zip_codes_geo.min.json"
+    url_zip_codes = "static/data/HOUSTON_ZIPCODES_GEOJSON.json"
+    // url_zip_codes = "https://raw.githubusercontent.com/OpenDataDE/State-zip-code-GeoJSON/master/tx_texas_zip_codes_geo.min.json"
 
     // Data Loading in D3: https://www.tutorialsteacher.com/d3js/loading-data-from-file-in-d3js
     // Promises chaining https://javascript.info/promise-chaining
@@ -49,26 +52,21 @@ d3.json("/api/realstatelistings").then((data) => {
         console.log(TexasZipCodeData.features);
         console.log(TexasZipCodeData.features[0].properties.ZCTA5CE10);
 
-        TexasZipCodeData.features.forEach(element => {
-            if (element.properties.ZCTA5CE10 === "77002") {
-                console.log(element)
-            }
-        })
 
         var zipCodesLayer = L.geoJSON(TexasZipCodeData, {
             onEachFeature: addPopup,
+            color: "black"
         });
-
 
         // Leaft let map
-        var map = L.map('map', {
+        var map = L.map('mapMap', {
             center: [29.75, -95.37],
-            zoom: 11,
+            zoom: 13,
             scrollWheelZoom: false, //Disable scroll wheel zoom on Leaflet
             fullscreenControl: true,
-
-            layers: [OpenStreetTiles, realstateLayer]
+            layers: [OpenStreetTiles, realstateLayer, zipCodesLayer]
         });
+
         var baseMaps = {
             "Streets": OpenStreetTiles
         };
@@ -78,11 +76,14 @@ d3.json("/api/realstatelistings").then((data) => {
             "Zip Codes": zipCodesLayer
         };
 
-        L.control.layers(baseMaps, overlayMaps, { collapsed: false }).addTo(map);
+        L.control.layers(baseMaps, overlayMaps, { collapsed: true }).addTo(map);
 
     });
 
 
+    // Get Zip Code from address
+    var addressString = data[0].address.split(" ");
+    console.log(addressString[addressString.length - 1])
 
 
 })

@@ -1,9 +1,10 @@
 import os
 import pandas as pd
-from flask import (Flask,render_template,jsonify,request,redirect)
-from flask_sqlalchemy import SQLAlchemy
-import psycopg2
 import datetime
+import psycopg2
+from flask import (Flask,render_template,jsonify,request,redirect, url_for)
+from flask_sqlalchemy import SQLAlchemy
+
 
 
 ###############################################
@@ -20,11 +21,8 @@ app = Flask(__name__)
 try:
     db_uri = os.environ['DATABASE_URL']
 except KeyError:
-    # db_uri = f"postgresql://{pgadim_user}:{pgadim_pass}@localhost:5432/project3_db"
     from api_keys import DATABASE_URL
     db_uri = DATABASE_URL
-    
-    print(db_uri)
 
 app.config['SQLALCHEMY_DATABASE_URI'] = db_uri
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
@@ -99,13 +97,7 @@ def index():
 @app.route("/routes")
 def routes_available():
 
-    return (
-        f"<h4>Routes:</h4>"
-        f"<p>/api/realstatelistings</p>"
-        f"<p>/classify/username</p>"
-        f"<p>/api/userselections/username</p>"
-        f"<html><a href='/'>Home</a></html>"
-        )
+    return render_template("routes.html")
 
 
 # Page for user classification of the real state
@@ -215,9 +207,7 @@ def end_classification():
             We will see you soon with more houses.</p>"""
             f"<html><a href='/'>Home</a></html>")
 
-@app.route("/testpage")
-def testpage():
-    return render_template("temp_modal.html")
+
 
 if __name__ == "__main__":
     # app.run(debug=True)
