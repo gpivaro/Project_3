@@ -1,0 +1,107 @@
+{% extends "base.html" %}
+
+{% block content%}
+
+<div>
+    <h2>Linear Regression Model</h2>
+    <h3>House price based on baths, bed, house size, lot size, Zip code</h3>
+    <div>
+        <table border=".5" class="dataframe">
+            <thead>
+                <tr style="text-align: right;">
+                    <th></th>
+                    <th>house_id</th>
+
+                    <th>
+                        price</th>
+                    <th>bed</th>
+                    <th>bath</th>
+                    <th>sqft</th>
+                    <th>lot</th>
+                    <th>latitude</th>
+                    <th>
+                        longitude</th>
+                    <th>Zip Code</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <th>0</th>
+                    <td>173</td>
+                    <td>319900.0</td>
+                    <td>2.0</td>
+                    <td>1.0</td>
+                    <td>1150.0</td>
+                    <td>10454.0</td>
+                    <td>29.811371
+                    </td>
+                    <td>-95.367273</td>
+                    <td>77009</td>
+                </tr>
+                <tr>
+                    <th>1</th>
+                    <td>174</td>
+                    <td>199900.0</td>
+                    <td>
+                        4.0</td>
+                    <td>2.5</td>
+                    <td>1920.0</td>
+                    <td>6491.0</td>
+                    <td>29.880633</td>
+                    <td>
+                        -95.484069
+                    </td>
+                    <td>77088</td>
+                </tr>
+                <tr>
+                    <th>2</th>
+                    <td>175</td>
+                    <td>295000.0</td>
+                    <td>4.0</td>
+                    <td>2.5</td>
+                    <td>2616.0</td>
+                    <td>10890.0</td>
+                    <td>30.084300</td>
+                    <td>-95.171903</td>
+                    <td>77345</td>
+                </tr>
+                <tr>
+                    <th>3</th>
+                    <td>176</td>
+                    <td>179000.0</td>
+                    <td>2.0</td>
+                    <td>2.0</td>
+                    <td>1104.0</td>
+                    <td>
+                        7150.0</td>
+                    <td>29.551512</td>
+                    <td>-95.136427</td>
+                    <td>77598</td>
+                </tr>
+                <tr>
+                    <th>4
+                    </th>
+
+                    <td>177</td>
+                    <td>309900.0</td>
+                    <td>3.0</td>
+                    <td>3.5</td>
+                    <td>2508.0</td>
+                    <td>3506.0</td>
+                    <td>
+                        29.778996</td>
+                    <td>-95.335636</td>
+                    <td>77020</td>
+                </tr>
+            </tbody>
+        </table>
+
+    </div>
+
+
+    <div>
+        <p>MSE: 0.8511276055816464, <span style="color: red;">R2: 0.22680682383886186</span></p>
+    </div>
+</div>
+
+{% endblock content%}

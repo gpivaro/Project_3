@@ -33,6 +33,56 @@ from api_keys import DATABASE_URL
 
 
 def scrapy_real_state_loop(page_number_list):
+
+    ## Save Scraped House Data to Database
+    # Create database connection
+    engine = create_engine(DATABASE_URL) 
+
+    # Create class to frame each real state instance
+    class RealState(Base):
+        __tablename__ = 'realstatelisting'
+
+        house_id = Column(Integer, primary_key=True)
+        address = Column(String(300), unique=True, nullable=False)
+        price = Column(Float, nullable=False)
+        bed = Column(Float, nullable=True)
+        bath = Column(Float, nullable=True)
+        sqft = Column(Float, nullable=True)
+        lot = Column(Float, nullable=True)
+        latitude = Column(Float, nullable=True)
+        longitude = Column(Float, nullable=True)
+        house_link = Column(String(300), nullable=True)
+        image_1 = Column(String(300), nullable=True)
+        image_2 = Column(String(300), nullable=True)
+        map_link = Column(String(300), nullable=True)
+        google_map = Column(String(300), nullable=True)
+        created_date = Column(DateTime, default=datetime.datetime.utcnow)
+
+        def __repr__(self):
+            return '<Listing %r>' % (self.address)
+
+            # Create class to frame each real state instance
+    class UserSelection(Base):
+        __tablename__ = 'userselection'
+
+        userselection_id = Column(Integer, primary_key=True)
+        username = Column(String(300))
+        useremail = Column(String(300))
+        house_id = Column(Integer, ForeignKey('realstatelisting.house_id'))
+        user_choice = Column(String(300))
+        created_date = Column(DateTime, default=datetime.datetime.utcnow)
+        
+        def __repr__(self):
+            return '<Listing %r>' % (self.userselection_id)
+
+
+    # Create all of the tables in our database based on the classes we've associated with our declarative base.
+    Base.metadata.create_all(engine)
+
+    # Create a Session object to connect to DB
+    session = Session(bind=engine)
+
+
     realstate_list = []
     sleep_for = 61
     for page_number in page_number_list:
@@ -213,113 +263,71 @@ def scrapy_real_state_loop(page_number_list):
 
             print('')
 
-        # When you’ve finished testing, close your browser using browser.quit:
+        
+
+        ### Data Cleaning
+        # Save the data to a dataframe
+        listing_df = pd.DataFrame(realstate_list)
+        # listing_df.to_csv(os.path.join('Database','ScrapedData.csv'))
+        # listing_df.head(2)
+
+        
+
+
+        """ Verify if the items are in the database to avoid roll back"""
+        new_entries_index = []
+        for nn in range(len(listing_df)):
+            house_item = listing_df.iloc[nn]
+            query_results = session.query(RealState).filter(RealState.address == house_item.Address).all()
+            if query_results:
+                pass
+            else:
+                new_entries_index.append(nn)
+
+        new_houses_df = listing_df.iloc[new_entries_index]
+        new_houses_df = new_houses_df.drop_duplicates()
+        print(f"--> {len(new_houses_df)} records to be added.")
+
+
+        ll = 0
+        for nn in range(len(new_houses_df)):
+        #     print('-'*25)
+        #     print(f"{nn+1} of {len(listing_df)}")
+            house_item = new_houses_df.iloc[nn]
+
+            new_house = RealState(
+                address = house_item.Address,
+                price = house_item.Price,
+                bed = house_item.Beds,
+                bath = house_item.Baths,
+                sqft = house_item.Sqft,
+                lot = house_item.Lot,
+                image_1 = house_item['Image_1'],
+                image_2 = house_item['Image_2'],
+                house_link = house_item.Link,
+                google_map = house_item['Google Maps']
+                )
+            
+            try:
+                session.add(new_house)
+                session.commit()
+                ll = ll + 1
+            except exc.IntegrityError:
+                session.rollback()
+                print(f'Roll back: {new_house}')
+
+        print(f"--> Total recordes added to database: {ll}.")
+    
+    # When you’ve finished testing, close your browser using browser.quit:
         browser.quit()
         if results == 0:
             time.sleep(300)
-            sleep_for = 100
+            sleep_for = 600
+            
         else:
             time.sleep(60)
-
-    ### Data Cleaning
-    # Save the data to a dataframe
-    listing_df = pd.DataFrame(realstate_list)
-    # listing_df.to_csv(os.path.join('Database','ScrapedData.csv'))
-    # listing_df.head(2)
-
-    ## Save Scraped House Data to Database
-    # Create database connection
-    engine = create_engine(DATABASE_URL) 
-
-    # Create class to frame each real state instance
-    class RealState(Base):
-        __tablename__ = 'realstatelisting'
-
-        house_id = Column(Integer, primary_key=True)
-        address = Column(String(300), unique=True, nullable=False)
-        price = Column(Float, nullable=False)
-        bed = Column(Float, nullable=True)
-        bath = Column(Float, nullable=True)
-        sqft = Column(Float, nullable=True)
-        lot = Column(Float, nullable=True)
-        latitude = Column(Float, nullable=True)
-        longitude = Column(Float, nullable=True)
-        house_link = Column(String(300), nullable=True)
-        image_1 = Column(String(300), nullable=True)
-        image_2 = Column(String(300), nullable=True)
-        map_link = Column(String(300), nullable=True)
-        google_map = Column(String(300), nullable=True)
-        created_date = Column(DateTime, default=datetime.datetime.utcnow)
-
-        def __repr__(self):
-            return '<Listing %r>' % (self.address)
-
-            # Create class to frame each real state instance
-    class UserSelection(Base):
-        __tablename__ = 'userselection'
-
-        userselection_id = Column(Integer, primary_key=True)
-        username = Column(String(300))
-        useremail = Column(String(300))
-        house_id = Column(Integer, ForeignKey('realstatelisting.house_id'))
-        user_choice = Column(String(300))
-        created_date = Column(DateTime, default=datetime.datetime.utcnow)
         
-        def __repr__(self):
-            return '<Listing %r>' % (self.userselection_id)
-
-
-    # Create all of the tables in our database based on the classes we've associated with our declarative base.
-    Base.metadata.create_all(engine)
-
-    # Create a Session object to connect to DB
-    session = Session(bind=engine)
-
-
-    """ Verify if the items are in the database to avoid roll back"""
-    new_entries_index = []
-    for nn in range(len(listing_df)):
-        house_item = listing_df.iloc[nn]
-        query_results = session.query(RealState).filter(RealState.address == house_item.Address).all()
-        if query_results:
-            pass
-        else:
-            new_entries_index.append(nn)
-
-    new_houses_df = listing_df.iloc[new_entries_index]
-    new_houses_df = new_houses_df.drop_duplicates()
-    print(f"--> {len(new_houses_df)} records to be added.")
-
-
-    ll = 0
-    for nn in range(len(new_houses_df)):
-    #     print('-'*25)
-    #     print(f"{nn+1} of {len(listing_df)}")
-        house_item = new_houses_df.iloc[nn]
-
-        new_house = RealState(
-            address = house_item.Address,
-            price = house_item.Price,
-            bed = house_item.Beds,
-            bath = house_item.Baths,
-            sqft = house_item.Sqft,
-            lot = house_item.Lot,
-            image_1 = house_item['Image_1'],
-            image_2 = house_item['Image_2'],
-            house_link = house_item.Link,
-            google_map = house_item['Google Maps']
-            )
-        
-        try:
-            session.add(new_house)
-            session.commit()
-            ll = ll + 1
-        except exc.IntegrityError:
-            session.rollback()
-            print(f'Roll back: {new_house}')
-
-    print(f"--> Total recordes added to database: {ll}.")
-    
+        print(sleep_for)
 
     ### Query database
     # Query all records and create a list with the returned data
