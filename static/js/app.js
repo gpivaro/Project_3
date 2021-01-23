@@ -10,9 +10,16 @@ console.log(`Current username: ${username}`);
 d3.json(`/api/userselections/${username}`).then((userdata) => {
     console.log(userdata);
     var userPreviousSelectionArray = userdata.map(element => element.house_id);
+    // console.log(`Previous selection ${userPreviousSelectionArray[Object.keys(userPreviousSelectionArray).length - 1]}`)
+    var previous_selection = userdata[Object.keys(userdata).length - 1];
+
+
 
     d3.json("/api/realstatelistings").then((data) => {
         console.log(data);
+
+
+
 
         // For randomization of houses presented for selection
         var houseSelect = Math.floor(Math.random() * Object.keys(data).length);
@@ -42,6 +49,7 @@ d3.json(`/api/userselections/${username}`).then((userdata) => {
 
                 houseSelect++;
                 console.log(houseSelect)
+
                 if (houseSelect === Object.keys(data).length) {
                     console.log('Stop')
                     // Simulate an HTTP redirect:
@@ -50,10 +58,16 @@ d3.json(`/api/userselections/${username}`).then((userdata) => {
                 }
             }
 
+
+
+
             // ********* --->>>>    For debug
             console.log('--------------------------');
             console.log(`Selected house_id: ${data[houseSelect].house_id}`);
             console.log(data[houseSelect]);
+            d3.json(`/api/house-cluster/${data[houseSelect].house_id}`).then((houseCluster) => {
+                console.log(houseCluster);
+            })
 
             var added_date = data[houseSelect].created_date;
             document.getElementById('Price').textContent = `$${(data[houseSelect].price).toLocaleString()}`;

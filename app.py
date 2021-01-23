@@ -2,10 +2,9 @@ import os
 import pandas as pd
 import datetime
 import psycopg2
-from flask import (Flask,render_template,jsonify,request,redirect, url_for)
+from flask import Flask, render_template, jsonify, request, redirect, url_for
 from flask_sqlalchemy import SQLAlchemy
-
-
+import pickle
 
 ###############################################
 # Flask Setup
@@ -19,19 +18,20 @@ app = Flask(__name__)
 # Verify if there is a environment variable with the DATABASE_URL.
 # Otherwise use the credentials from the api_keys file
 try:
-    db_uri = os.environ['DATABASE_URL']
+    db_uri = os.environ["DATABASE_URL"]
 except KeyError:
     from api_keys import DATABASE_URL
+
     db_uri = DATABASE_URL
 
-app.config['SQLALCHEMY_DATABASE_URI'] = db_uri
-app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+app.config["SQLALCHEMY_DATABASE_URI"] = db_uri
+app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 
 db = SQLAlchemy(app)
 
 # Create class to frame each real state instance
 class RealState(db.Model):
-    __tablename__ = 'realstatelisting'
+    __tablename__ = "realstatelisting"
 
     house_id = db.Column(db.Integer, primary_key=True)
     address = db.Column(db.String(300), unique=True, nullable=False)
@@ -50,22 +50,32 @@ class RealState(db.Model):
     created_date = db.Column(db.DateTime, default=datetime.datetime.utcnow)
 
     def __repr__(self):
-        return '<Listing %r>' % (self.address)
+        return "<Listing %r>" % (self.address)
+
 
 # Create class to frame each real state instance
 class UserSelection(db.Model):
-    __tablename__ = 'userselection'
+    __tablename__ = "userselection"
 
     userselection_id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(300))
     useremail = db.Column(db.String(300))
-    house_id = db.Column(db.Integer, db.ForeignKey('realstatelisting.house_id'))
+    house_id = db.Column(db.Integer, db.ForeignKey("realstatelisting.house_id"))
     user_choice = db.Column(db.String(300))
     created_date = db.Column(db.DateTime, default=datetime.datetime.utcnow)
-    
 
     def __repr__(self):
-        return '<Listing %r>' % (self.userselection_id)
+        return "<Listing %r>" % (self.userselection_id)
+
+
+###############################################
+# Machine Learning Model
+###############################################
+def load_model():
+    global model
+    with open(os.path.join("Models", "kmeans1.pkl"), "rb") as f:
+        model = pickle.load(f)
+        print("model loaded")
 
 
 ###############################################
@@ -81,14 +91,14 @@ class UserSelection(db.Model):
 
 
 # Home page / index page
-@app.route("/", methods=['GET', 'POST'])
+@app.route("/", methods=["GET", "POST"])
 def index():
-    
-    if request.method == 'POST':
-            
-        user = request.form['fname']
-        
-        return redirect( f"/classify/{user}")
+
+    if request.method == "POST":
+
+        user = request.form["fname"]
+
+        return redirect(f"/classify/{user}")
 
     return render_template("index.html")
 
@@ -101,24 +111,24 @@ def routes_available():
 
 
 # Page for user classification of the real state
-@app.route("/classify/<string:user>", methods=['GET', 'POST'])
+@app.route("/classify/<string:user>", methods=["GET", "POST"])
 def classify(user):
     """ https://www.youtube.com/watch?v=_sgVt16Q4O4 """
-    if request.method == 'POST':
+    if request.method == "POST":
         print(f"User: {request.form['username']}")
-        print(f"House ID: {request.form['houseID']}")        
+        print(f"House ID: {request.form['houseID']}")
         print(f"User selection: {request.form.getlist('myCheckbox')}")
         userchoice = UserSelection(
-            username = request.form['username'],
-            house_id = request.form['houseID'], 
-            user_choice = request.form['myCheckbox']
-            )
-        
+            username=request.form["username"],
+            house_id=request.form["houseID"],
+            user_choice=request.form["myCheckbox"],
+        )
+
         db.session.add(userchoice)
         db.session.commit()
 
-        return redirect( f"/classify/{user}")
-    
+        return redirect(f"/classify/{user}")
+
     return render_template("classify.html", myVar=user)
 
 
@@ -127,30 +137,41 @@ def classify(user):
 def realstatelistings():
 
     # Retrieve data from database
-    listings = db.session.query(
-                                RealState.house_id,
-                                RealState.address,
-                                RealState.price,
-                                RealState.bed,
-                                RealState.bath,
-                                RealState.sqft,
-                                RealState.lot,
-                                RealState.latitude,
-                                RealState.longitude,
-                                RealState.house_link,
-                                RealState.image_1,
-                                RealState.image_2,
-                                RealState.map_link,
-                                RealState.google_map,
-                                RealState.created_date
-    ).filter(RealState.latitude.isnot(None)).order_by(RealState.house_id).all()
-        
+    listings = (
+        db.session.query(
+            RealState.house_id,
+            RealState.address,
+            RealState.price,
+            RealState.bed,
+            RealState.bath,
+            RealState.sqft,
+            RealState.lot,
+            RealState.latitude,
+            RealState.longitude,
+            RealState.house_link,
+            RealState.image_1,
+            RealState.image_2,
+            RealState.map_link,
+            RealState.google_map,
+            RealState.created_date,
+        )
+        .filter(RealState.latitude.isnot(None))
+        .order_by(RealState.house_id)
+        .all()
+    )
+
     # Convert the data to a dataframe
     listing_df = pd.DataFrame(listings)
 
     # Fill NaN so JS can handle it
     listing_df = listing_df.fillna(0)
-    
+
+    # Run Kmeans clustering model
+    predicted_clusters = model.predict(
+        listing_df[["latitude", "longitude", "price"]].values
+    )
+    listing_df["cluster"] = predicted_clusters
+
     # Convert dataframe to dictionary
     listing_dict = listing_df.to_dict(orient="records")
 
@@ -164,26 +185,25 @@ def userselections(UserName):
 
     # Retrieve data from database
     userchoices = db.session.query(
-                                    UserSelection.userselection_id,
-                                    UserSelection.username,
-                                    UserSelection.useremail,
-                                    UserSelection.house_id,
-                                    UserSelection.user_choice,
-                                    UserSelection.created_date
-                                ).filter_by(username = UserName)
+        UserSelection.userselection_id,
+        UserSelection.username,
+        UserSelection.useremail,
+        UserSelection.house_id,
+        UserSelection.user_choice,
+        UserSelection.created_date,
+    ).filter_by(username=UserName)
 
     # Convert the data to a dataframe
     userchoices_df = pd.DataFrame(userchoices)
 
     # Try outer join
     # db.session.query(RealState,UserSelection).outerjoin(UserSelection,RealState.house_id == UserSelection.house_id).filter_by(username = 'Gabriel').all()
-    
+
     # Convert dataframe to dictionary
     userchoices_dict = userchoices_df.to_dict(orient="records")
 
     # Return json version of the data
     return jsonify(userchoices_dict)
-
 
 
 # Real state map and general info
@@ -203,15 +223,99 @@ def map_view():
 # Route when the user's has no more houses to select
 @app.route("/end-classification")
 def end_classification():
-        
-    return (f"""<h4>Thanks.</h4>
+
+    return (
+        f"""<h4>Thanks.</h4>
             <p>You have made your selection for all the houses that we have available at this moment. <br>
             We will see you soon with more houses.</p>"""
-            f"<html><a href='/'>Home</a></html>")
+        f"<html><a href='/'>Home</a></html>"
+    )
 
+
+# Route to suggest houses based on the cluster and the previous user selection
+@app.route("/api/house-cluster/<string:houseID>")
+def house_cluster(houseID):
+
+    # Retrieve data from database
+    house = (
+        db.session.query(
+            RealState.house_id, RealState.price, RealState.latitude, RealState.longitude
+        )
+        .filter(RealState.house_id == houseID)
+        .first()
+    )
+
+    house_cluster = int(
+        model.predict([[house.latitude, house.longitude, house.price]])[0]
+    )
+    print(house_cluster)
+
+    return jsonify({"house_id": houseID, "house_cluster": house_cluster})
+
+
+# # Route to suggest houses based on the cluster and the previous user selection
+# @app.route("/recommended-house/<string:username>")
+# def recommended_house(username):
+
+#     # Retrieve data from database
+#     userchoices = (
+#         db.session.query(
+#             UserSelection.userselection_id,
+#             UserSelection.username,
+#             UserSelection.useremail,
+#             UserSelection.house_id,
+#             UserSelection.user_choice,
+#             UserSelection.created_date,
+#         )
+#         .filter_by(username=username)
+#         .order_by(UserSelection.userselection_id.desc())
+#         .first()
+#     )
+
+#     # Retrieve data from database
+#     house = (
+#         db.session.query(
+#             RealState.house_id,
+#             RealState.address,
+#             RealState.price,
+#             RealState.bed,
+#             RealState.bath,
+#             RealState.sqft,
+#             RealState.lot,
+#             RealState.latitude,
+#             RealState.longitude,
+#             RealState.house_link,
+#             RealState.image_1,
+#             RealState.image_2,
+#             RealState.map_link,
+#             RealState.google_map,
+#             RealState.created_date,
+#         )
+#         .filter(RealState.house_id == userchoices.house_id)
+#         .first()
+#     )
+
+#     house_cluster = int(
+#         model.predict([[house.latitude, house.longitude, house.price]])[0]
+#     )
+#     print(house_cluster)
+
+#     return jsonify(
+#         {
+#             "userselection_id": userchoices.userselection_id,
+#             "house_id": userchoices.house_id,
+#             "user_choice": userchoices.user_choice,
+#             "house_cluster": house_cluster,
+#         }
+#     )
+
+
+@app.route("/temp")
+def temp():
+    return render_template("classification.html")
 
 
 if __name__ == "__main__":
+    load_model()
     app.run(host="0.0.0.0", port=5100, debug=True)
-
 
