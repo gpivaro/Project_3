@@ -82,10 +82,13 @@ def load_model():
 # Routes
 ###############################################
 
-# # Recreate database each time for demo
-# # Running these lines will erase all the data on the db
-# @app.before_first_request
-# def setup():
+# Recreate database each time for demo
+# Running these lines will erase all the data on the db
+@app.before_first_request
+def setup():
+    load_model()
+
+
 #     db.drop_all()
 #     db.create_all()
 
