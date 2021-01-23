@@ -73,7 +73,7 @@ class UserSelection(db.Model):
 ###############################################
 def load_model():
     global model
-    with open(os.path.join("Models", "kmeans1.pkl"), "rb") as f:
+    with open(os.path.join("static", "Models", "kmeans1.pkl"), "rb") as f:
         model = pickle.load(f)
         print("model loaded")
 
