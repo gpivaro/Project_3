@@ -1,5 +1,10 @@
 import requests
-from api_keys import Geo_IPIFY_API
+import os
+
+try:
+    Geo_IPIFY_API = os.environ["Geo_IPIFY_API"]
+except KeyError:
+    from api_keys import Geo_IPIFY_API
 
 # get client ip address and return ip location
 def get_client_ip(request):
