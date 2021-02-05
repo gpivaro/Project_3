@@ -1,4 +1,4 @@
-var height_size = 500;
+var height_size = 350;
 var width_size = 550;
 
 // Responsive chart
@@ -13,7 +13,7 @@ d3.json("/api/realstatelistings").then((data) => {
     })
     averagePrice = Math.round(averagePrice / data.length);
 
-    document.getElementById('RealStateTotal').textContent = `${data.length}`;
+    document.getElementById('RealStateTotal').textContent = `${data.length.toLocaleString()}`;
     document.getElementById('AveragePrice').textContent = `$${averagePrice.toLocaleString()}`;
 
 
@@ -24,7 +24,7 @@ d3.json("/api/realstatelistings").then((data) => {
         text: ['A<br>size: 40', 'B<br>size: 60', 'C<br>size: 80', 'D<br>size: 100'],
         mode: 'markers',
         marker: {
-            color: data.map(element => element.lot / 1000),
+            // color: data.map(element => element.lot / 1000),
             // size: data.map(element => element.lot / 1000)
         }
     };

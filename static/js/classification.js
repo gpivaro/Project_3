@@ -9,9 +9,9 @@ console.log(`Current username: ${username}`);
 
 
 d3.json(`/api/userselections/${username}`).then((userdata) => {
-    // console.log(userdata);
+    console.log(userdata);
     var userPreviousSelectionArray = userdata.map(element => element.house_id);
-    // console.log(`Previous selection ${userPreviousSelectionArray[Object.keys(userPreviousSelectionArray).length - 1]}`)
+    console.log(`Previous selection ${userPreviousSelectionArray[Object.keys(userPreviousSelectionArray).length - 1]}`)
 
     var previous_selection = userdata[Object.keys(userdata).length - 1];
     if (previous_selection === undefined) {

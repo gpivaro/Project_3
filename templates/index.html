@@ -69,5 +69,17 @@
     </div>
 </div>
 
+<div style="text-align: center;margin-top:1%">
+    <hr>
+    <p>We have received <strong><span id="visitor"></span></strong> visitors since February 2021.</p>
+</div>
+
+<script>
+    d3.json('/api/show-visitors/count/').then((userdata) => {
+        console.log(userdata);
+        document.getElementById('visitor').textContent = `${userdata.visitors}`;
+    })
+</script>
+
 
 {% endblock content%}

@@ -5,6 +5,7 @@ import psycopg2
 from flask import Flask, render_template, jsonify, request, redirect, url_for
 from flask_sqlalchemy import SQLAlchemy
 import pickle
+from Get_IP import get_client_ip
 
 ###############################################
 # Flask Setup
@@ -68,6 +69,17 @@ class UserSelection(db.Model):
         return "<Listing %r>" % (self.userselection_id)
 
 
+class VisitorInfo(db.Model):
+    __tablename__ = "visitoripinfo"
+    id = db.Column(db.Integer, primary_key=True)
+    ipaddress = db.Column(db.String(300), nullable=True)
+    country = db.Column(db.String(300), nullable=True)
+    region = db.Column(db.String(300), nullable=True)
+    city = db.Column(db.String(300), nullable=True)
+    latitude = db.Column(db.Float, nullable=True)
+    longitude = db.Column(db.Float, nullable=True)
+
+
 ###############################################
 # Machine Learning Model
 ###############################################
@@ -87,15 +99,29 @@ def load_model():
 @app.before_first_request
 def setup():
     load_model()
-
-
-#     db.drop_all()
-#     db.create_all()
+    # db.drop_all()
+    # db.create_all()
 
 
 # Home page / index page
 @app.route("/", methods=["GET", "POST"])
 def index():
+
+    # get visitor ip address info
+    response = get_client_ip(request)
+    # Save visitor ip to database
+    visitorinfo = VisitorInfo(
+        ipaddress=response["ip"],
+        country=response["location"]["country"],
+        region=response["location"]["region"],
+        city=response["location"]["city"],
+        latitude=response["location"]["lat"],
+        longitude=response["location"]["lng"],
+    )
+    # Skip saving if on local host
+    if response["ip"] != "127.0.0.1":
+        db.session.add(visitorinfo)
+        db.session.commit()
 
     if request.method == "POST":
 
@@ -248,77 +274,42 @@ def house_cluster(houseID):
         .first()
     )
 
+    # Apply the model on the house selected
     house_cluster = int(
         model.predict([[house.latitude, house.longitude, house.price]])[0]
     )
-    print(house_cluster)
 
     return jsonify({"house_id": houseID, "house_cluster": house_cluster})
 
 
-# # Route to suggest houses based on the cluster and the previous user selection
-# @app.route("/recommended-house/<string:username>")
-# def recommended_house(username):
+# API to access the visitors info
+@app.route("/api/show-visitors/<string:type>/")
+def show_visitors(type):
 
-#     # Retrieve data from database
-#     userchoices = (
-#         db.session.query(
-#             UserSelection.userselection_id,
-#             UserSelection.username,
-#             UserSelection.useremail,
-#             UserSelection.house_id,
-#             UserSelection.user_choice,
-#             UserSelection.created_date,
-#         )
-#         .filter_by(username=username)
-#         .order_by(UserSelection.userselection_id.desc())
-#         .first()
-#     )
+    if type == "all":
+        visitorinfo = db.session.query(
+            VisitorInfo.ipaddress,
+            VisitorInfo.country,
+            VisitorInfo.region,
+            VisitorInfo.city,
+            VisitorInfo.latitude,
+            VisitorInfo.longitude,
+        )
 
-#     # Retrieve data from database
-#     house = (
-#         db.session.query(
-#             RealState.house_id,
-#             RealState.address,
-#             RealState.price,
-#             RealState.bed,
-#             RealState.bath,
-#             RealState.sqft,
-#             RealState.lot,
-#             RealState.latitude,
-#             RealState.longitude,
-#             RealState.house_link,
-#             RealState.image_1,
-#             RealState.image_2,
-#             RealState.map_link,
-#             RealState.google_map,
-#             RealState.created_date,
-#         )
-#         .filter(RealState.house_id == userchoices.house_id)
-#         .first()
-#     )
+        # Convert the data to a dataframe
+        visitorinfo_df = pd.DataFrame(visitorinfo)
+        # Convert dataframe to dictionary
+        visitorinfo_dict = visitorinfo_df.to_dict(orient="records")
 
-#     house_cluster = int(
-#         model.predict([[house.latitude, house.longitude, house.price]])[0]
-#     )
-#     print(house_cluster)
+    elif type == "count":
+        visitorcount = db.session.query(VisitorInfo.id).count()
 
-#     return jsonify(
-#         {
-#             "userselection_id": userchoices.userselection_id,
-#             "house_id": userchoices.house_id,
-#             "user_choice": userchoices.user_choice,
-#             "house_cluster": house_cluster,
-#         }
-#     )
+        visitorinfo_dict = {"visitors": visitorcount}
 
-
-@app.route("/temp")
-def temp():
-    return render_template("classification.html")
+    # Return json version of the data
+    return jsonify(visitorinfo_dict)
 
 
 if __name__ == "__main__":
-    load_model()
     app.run(host="0.0.0.0", port=5100, debug=True)
 
