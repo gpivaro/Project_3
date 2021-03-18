@@ -213,14 +213,18 @@ def realstatelistings():
 def userselections(UserName):
 
     # Retrieve data from database
-    userchoices = db.session.query(
-        UserSelection.userselection_id,
-        UserSelection.username,
-        UserSelection.useremail,
-        UserSelection.house_id,
-        UserSelection.user_choice,
-        UserSelection.created_date,
-    ).filter_by(username=UserName)
+    userchoices = (
+        db.session.query(
+            UserSelection.userselection_id,
+            UserSelection.username,
+            UserSelection.useremail,
+            UserSelection.house_id,
+            UserSelection.user_choice,
+            UserSelection.created_date,
+        )
+        .filter_by(username=UserName)
+        .order_by(UserSelection.created_date)
+    )
 
     # Convert the data to a dataframe
     userchoices_df = pd.DataFrame(userchoices)

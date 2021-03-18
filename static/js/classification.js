@@ -24,6 +24,7 @@ d3.json(`/api/userselections/${username}`).then((userdata) => {
     d3.json(`/api/house-cluster/${previous_selection.house_id}`).then((houseCluster) => {
 
         var previous_selection_cluster = houseCluster.house_cluster
+        console.log(previous_selection_cluster);
         var previous_selection_choice = previous_selection.user_choice
         console.log(`Previous cluster: ${previous_selection_cluster} | choice: ${previous_selection_choice}`);
 
