@@ -1,5 +1,3 @@
-
-
 ### Import Dependencies
 import os
 from bs4 import BeautifulSoup
@@ -11,15 +9,18 @@ import numpy as np
 import pprint
 import datetime
 
- # Imports the method used to connect to DBs
+# Imports the method used to connect to DBs
 from sqlalchemy import create_engine
 from sqlalchemy import exc
 from sqlalchemy import update
+
 # Imports the methods needed to abstract python classes into database tables
 from sqlalchemy.ext.declarative import declarative_base
+
 Base = declarative_base()
 # function to establish a session with a connected database
 from sqlalchemy.orm import Session
+
 # database compliant datatypes
 from sqlalchemy import Column, Integer, String, Float, ForeignKey, DateTime
 
@@ -29,6 +30,7 @@ from api_keys import positionstack_key
 from api_keys import opencagedata_API
 from api_keys import DATABASE_URL
 
+
 def get_coordinates():
     ### Setup Splinter (For Mac)
     # identify location of chromedriver and store it as a variable
@@ -37,15 +39,15 @@ def get_coordinates():
 
     # Setup configuration variables to enable Splinter to interact with browser
     executable_path = {"executable_path": driverPath[0]}
-    browser = Browser('chrome', **executable_path, headless=False)
+    browser = Browser("chrome", **executable_path, headless=True)
 
     ## Save Scraped House Data to Database
     # Create database connection
-    engine = create_engine(DATABASE_URL) 
+    engine = create_engine(DATABASE_URL)
 
     # Create class to frame each real state instance
     class RealState(Base):
-        __tablename__ = 'realstatelisting'
+        __tablename__ = "realstatelisting"
 
         house_id = Column(Integer, primary_key=True)
         address = Column(String(300), unique=True, nullable=False)
@@ -64,22 +66,22 @@ def get_coordinates():
         created_date = Column(DateTime, default=datetime.datetime.utcnow)
 
         def __repr__(self):
-            return '<Listing %r>' % (self.address)
+            return "<Listing %r>" % (self.address)
 
             # Create class to frame each real state instance
+
     class UserSelection(Base):
-        __tablename__ = 'userselection'
+        __tablename__ = "userselection"
 
         userselection_id = Column(Integer, primary_key=True)
         username = Column(String(300))
         useremail = Column(String(300))
-        house_id = Column(Integer, ForeignKey('realstatelisting.house_id'))
+        house_id = Column(Integer, ForeignKey("realstatelisting.house_id"))
         user_choice = Column(String(300))
         created_date = Column(DateTime, default=datetime.datetime.utcnow)
-        
-        def __repr__(self):
-            return '<Listing %r>' % (self.userselection_id)
 
+        def __repr__(self):
+            return "<Listing %r>" % (self.userselection_id)
 
     # Create all of the tables in our database based on the classes we've associated with our declarative base.
     Base.metadata.create_all(engine)
@@ -87,11 +89,11 @@ def get_coordinates():
     # Create a Session object to connect to DB
     session = Session(bind=engine)
 
-
     ### Get Coordinates Using Google Maps
     """ Get house coordinates using Splinter to scrap Google Maps """
+
     def find_coordinates(url):
-        browser = Browser('chrome', **executable_path, headless=False)
+        browser = Browser("chrome", **executable_path, headless=True)
         browser.visit(url)
         time.sleep(5)
         current_url = browser.url
@@ -100,6 +102,9 @@ def get_coordinates():
         try:
             latitude = float(current_url.split("!")[-2].split("d")[1])
             longitude = float(current_url.split("!")[-1].split("d")[1])
+            print(f"latitude {latitude} / longitude {longitude}")
+            print()
+
         except IndexError:
             url_string_list = current_url.split("/")
             for jj in range(len(url_string_list)):
@@ -110,41 +115,52 @@ def get_coordinates():
                 else:
                     latitude = float(url_string_list[jj][1:-1].split(",")[0])
                     longitude = float(url_string_list[jj][1:-1].split(",")[1])
-            
+                    print(f"latitude {latitude} / longitude {longitude}")
+                    print()
+
         map_link = f"https://www.openstreetmap.org/?mlat={latitude}&mlon={longitude}#map=15/{latitude}/{longitude}"
 
-        return {"latitude":latitude, "longitude":longitude, "map_link": map_link}
-
+        return {"latitude": latitude, "longitude": longitude, "map_link": map_link}
 
     """ Query houses and update entry with coordinates and map link """
+
     def update_house_coordinates(HouseID):
         house = session.query(RealState).filter(RealState.house_id == HouseID)
         coordinates = find_coordinates(house[0].google_map)
-        stmt = update(RealState).where(RealState.house_id == HouseID).values(coordinates).\
-            execution_options(synchronize_session="fetch")
+        stmt = (
+            update(RealState)
+            .where(RealState.house_id == HouseID)
+            .values(coordinates)
+            .execution_options(synchronize_session="fetch")
+        )
 
         session.execute(stmt)
         session.commit()
 
     # Update coordinates for all entries of the database that doesn't have coordinates
-    house_list = session.query(RealState).filter(RealState.latitude == None).order_by(RealState.house_id).all()
+    house_list = (
+        session.query(RealState)
+        .filter(RealState.latitude == None)
+        .order_by(RealState.house_id)
+        .all()
+    )
     nn = 0
     for house in house_list:
+        print("---" * 25)
+        print(f"Get coordinates for {nn} of {len(house_list)} | {house.address}")
         update_house_coordinates(house.house_id)
         nn = nn + 1
 
     print(f"--> {nn} records updated.")
 
-    
-
     ### Query database
     # Query all records and create a list with the returned data
     query_result = session.query(RealState).all()
-    print('')
+    print("")
     print(f"Current records on database: {len(query_result)}.")
 
     session.close()
 
 
-
 get_coordinates()
+

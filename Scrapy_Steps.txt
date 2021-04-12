@@ -1,0 +1,2 @@
+1. Run Real_State_Scraper_V3_script.py to scrapy the data
+2. Run Get_Coordinates.py to update the database with the coordinates

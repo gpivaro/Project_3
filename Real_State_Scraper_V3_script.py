@@ -87,7 +87,11 @@ def scrapy_real_state_loop(page_number_list):
 
     realstate_list = []
     sleep_for = 300
+
     for page_number in page_number_list:
+        print("-" * 35)
+        print(f"Getting data from page {page_number} of {max(page_number_list)}.")
+        print()
 
         ### Setup Splinter (For Mac)
         # identify location of chromedriver and store it as a variable
@@ -110,11 +114,14 @@ def scrapy_real_state_loop(page_number_list):
 
         query_url = f"{url_realtor}{min_price}-{max_price}{sort_by}/pg-{page_number}"
         print(f"Search URL: {query_url}")
+        print()
 
         ### Splinter
         # Use the browser to visit the url
         browser.visit(query_url)
         # Wait for x seconds for error purpouses
+        print(f"Sleeping for {sleep_for} seconds @{datetime.datetime.now()}")
+        print()
         time.sleep(sleep_for)
 
         # Return the rendered page by the browser
@@ -327,13 +334,14 @@ def scrapy_real_state_loop(page_number_list):
         # When you’ve finished testing, close your browser using browser.quit:
         browser.quit()
         if results == 0:
+            print(f"Sleeping for 300 seconds @{datetime.datetime.now()}")
+            print()
             time.sleep(300)
             sleep_for = 600
 
         else:
-            time.sleep(60)
-
-        print(sleep_for)
+            print(f"Sleeping for 10 seconds")
+            time.sleep(10)
 
     ### Query database
     # Query all records and create a list with the returned data
@@ -344,4 +352,4 @@ def scrapy_real_state_loop(page_number_list):
     session.close()
 
 
-scrapy_real_state_loop(list(range(1, 20)))
+scrapy_real_state_loop(list(range(12, 15)))
