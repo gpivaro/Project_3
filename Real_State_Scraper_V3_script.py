@@ -352,4 +352,4 @@ def scrapy_real_state_loop(page_number_list):
     session.close()
 
 
-scrapy_real_state_loop(list(range(12, 15)))
+scrapy_real_state_loop(list(range(1, 15)))

@@ -16,15 +16,22 @@ app = Flask(__name__)
 # Database
 ###############################################
 
+# Database name and database tables
+database_name = "project3database"
+
 # Verify if there is a environment variable with the DATABASE_URL.
 # Otherwise use the credentials from the api_keys file
 try:
     db_uri = os.environ["DATABASE_URL"]
 except KeyError:
-    from api_keys import DATABASE_URL
+    # from api_keys import DATABASE_URL
+    # db_uri = DATABASE_URL
 
-    db_uri = DATABASE_URL
+    from api_keys import mysql_user_project_3, mysql_pass_project_3, mysql_hostname, mysql_port
+    db_uri = f"mysql+mysqlconnector://{mysql_user_project_3}:{mysql_pass_project_3}@{mysql_hostname}:{mysql_port}/{database_name}"
 
+# print(db_uri)
+    
 app.config["SQLALCHEMY_DATABASE_URI"] = db_uri
 app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 
