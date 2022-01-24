@@ -117,18 +117,18 @@ def index():
     # get visitor ip address info
     response = get_client_ip(request)
     # Save visitor ip to database
-    visitorinfo = VisitorInfo(
-        ipaddress=response["ip"],
-        country=response["location"]["country"],
-        region=response["location"]["region"],
-        city=response["location"]["city"],
-        latitude=response["location"]["lat"],
-        longitude=response["location"]["lng"],
-    )
-    # Skip saving if on local host
-    if response["ip"] != "127.0.0.1":
-        db.session.add(visitorinfo)
-        db.session.commit()
+    # visitorinfo = VisitorInfo(
+    #     ipaddress=response["ip"],
+    #     country=response["location"]["country"],
+    #     region=response["location"]["region"],
+    #     city=response["location"]["city"],
+    #     latitude=response["location"]["lat"],
+    #     longitude=response["location"]["lng"],
+    # )
+    # # Skip saving if on local host
+    # if response["ip"] != "127.0.0.1":
+    #     db.session.add(visitorinfo)
+    #     db.session.commit()
 
     if request.method == "POST":
 
