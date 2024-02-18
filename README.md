@@ -42,7 +42,7 @@ Build a web application that stores and displays info about real estate listed t
 
 
 * Deployment:
-    * Application live [here](http://find-your-dream-home.herokuapp.com/).
+    * Application video demo [here]([http://find-your-dream-home.herokuapp.com/](https://www.youtube.com/watch?v=6rXyssRe8W8)https://www.youtube.com/watch?v=6rXyssRe8W8).
 
 
 
