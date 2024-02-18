@@ -8,7 +8,7 @@
 
 ## Summary
 
-Build a web application that stores and displays info about real estate listed to sell in the Houston area. The houses are available for user classification based on the image of the house, and features such as price, number of bedrooms, number of bathrooms, square foot, and lot size. The user is presented with three options to classify the real estate: love, like, and dislike. Based on the user classification, the application will suggest houses using Machine Learning algorithms. The application also provides a map for visualization of all the real estate on the database distributed by Zip Codes. 
+Build a web application that stores and displays info about real estate listed to sell in the Houston area. The houses are available for user classification based on the image of the house and features such as price, number of bedrooms, number of bathrooms, square foot, and lot size. The user is presented with three options to classify the real estate: love, like, and dislike. Based on the user classification, the application will suggest houses using Machine Learning algorithms. The application also provides a map for visualization of all the real estate on the database distributed by Zip Codes. 
 
 * Data Source: 
     * Actual data of real estate for sale in the Houston, TX area.
@@ -42,7 +42,7 @@ Build a web application that stores and displays info about real estate listed t
 
 
 * Deployment:
-    * Application video demo [here]([http://find-your-dream-home.herokuapp.com/](https://www.youtube.com/watch?v=6rXyssRe8W8)https://www.youtube.com/watch?v=6rXyssRe8W8).
+    * Application video demo [here](https://www.youtube.com/watch?v=6rXyssRe8W8).
 
 
 
